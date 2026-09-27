@@ -1,0 +1,81 @@
+{
+  "evaluation_timestamp": "2026-09-27T10:28:09.581095",
+  "test_records_count": 360,
+  "test_anomalies_count": 48,
+  "models": {
+    "isolation_forest_unsupervised": {
+      "roc_auc": 0.6903,
+      "precision": 0.3019,
+      "recall": 0.3333,
+      "f1_score": 0.3168,
+      "role": "Anomaly Detection Agent Tool"
+    },
+    "random_forest_supervised": {
+      "roc_auc": 0.904,
+      "precision": 0.8378,
+      "recall": 0.6458,
+      "f1_score": 0.7294,
+      "accuracy": 0.9361,
+      "role": "Risk Analysis Agent & Prioritization Tool"
+    }
+  },
+  "top_predictive_features": [
+    {
+      "feature": "reporting_delay_days",
+      "importance": 0.2376
+    },
+    {
+      "feature": "policy_contribution_tier",
+      "importance": 0.1825
+    },
+    {
+      "feature": "claim_amount",
+      "importance": 0.1783
+    },
+    {
+      "feature": "policy_count",
+      "importance": 0.1526
+    },
+    {
+      "feature": "police_report_filed_No",
+      "importance": 0.0298
+    },
+    {
+      "feature": "police_report_filed_Yes",
+      "importance": 0.0281
+    },
+    {
+      "feature": "purchasing_power_class",
+      "importance": 0.0227
+    },
+    {
+      "feature": "incident_severity_Severe",
+      "importance": 0.0179
+    },
+    {
+      "feature": "policy_type_Third_Party_Private",
+      "importance": 0.0131
+    },
+    {
+      "feature": "witness_present_Yes",
+      "importance": 0.0121
+    }
+  ],
+  "input_features": {
+    "numerical": [
+      "claim_amount",
+      "reporting_delay_days",
+      "policy_count",
+      "policy_contribution_tier",
+      "purchasing_power_class",
+      "prior_claims_count"
+    ],
+    "categorical": [
+      "policy_type",
+      "incident_type",
+      "incident_severity",
+      "police_report_filed",
+      "witness_present"
+    ]
+  }
+}

@@ -1,0 +1,7 @@
+venv
+.env
+__pycache__
+insurance+company+benchmark+coil+2000
+vector_store
+*.joblib
+mayur.py
