@@ -1,0 +1,45 @@
+{
+  "system_name": "AI-Powered Insurance Claims Intelligence Assistant",
+  "timestamp": "2026-09-27T17:10:45.411558",
+  "criteria_1_similar_claim_retrieval": {
+    "evaluation_sample_size": 60,
+    "hit_rate_at_1": 1.0,
+    "hit_rate_at_3": 1.0,
+    "hit_rate_at_5": 1.0,
+    "mean_reciprocal_rank_mrr": 1.0
+  },
+  "criteria_2_risk_and_anomaly_detection": {
+    "total_claims_evaluated": 1800,
+    "true_anomalies_count": 242,
+    "roc_auc_score": 0.9467,
+    "accuracy": 0.875,
+    "precision": 0.5265,
+    "recall_sensitivity": 0.6983,
+    "specificity": 0.9024,
+    "f1_score": 0.6004,
+    "confusion_matrix": {
+      "true_negatives": 1406,
+      "false_positives": 152,
+      "false_negatives": 73,
+      "true_positives": 169
+    },
+    "siu_handoff_escalations_count": 181
+  },
+  "criteria_3_claim_summary_and_grounding": {
+    "sample_claims_tested": 10,
+    "factual_grounding_accuracy": 1.0,
+    "summary_entity_coverage": 0.6667,
+    "zero_hallucination_rate": 1.0
+  },
+  "criteria_4_natural_language_query_accuracy": {
+    "test_queries_count": 6,
+    "top1_category_accuracy": 1.0,
+    "top3_category_accuracy": 1.0
+  },
+  "criteria_5_latency_and_consistency": {
+    "sample_runs_count": 4,
+    "average_workflow_latency_sec": 13.52,
+    "p95_workflow_latency_sec": 14.2,
+    "deterministic_math_consistency": true
+  }
+}
