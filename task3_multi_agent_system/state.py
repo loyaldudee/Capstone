@@ -36,6 +36,9 @@ class ClaimsInvestigationState(TypedDict, total=False):
     siu_evidence_checklist: List[str]
     final_recommended_action: str
 
+    # Agent 6: Senior Claims Adjudication Advisor Agent
+    advisor_guidance: Dict[str, Any]
+
     # Flow Control & Handoff Flags
     requires_investigation_handoff: bool
     current_stage: str
@@ -60,6 +63,7 @@ def create_initial_state(claim_data: Dict[str, Any], customer_profile: Optional[
         "executive_summary": "",
         "investigation_dossier": {},
         "siu_evidence_checklist": [],
+        "advisor_guidance": {},
         "final_recommended_action": "Pending Review",
         "requires_investigation_handoff": False,
         "current_stage": "INITIALIZED",

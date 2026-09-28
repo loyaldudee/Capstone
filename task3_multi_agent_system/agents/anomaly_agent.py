@@ -71,6 +71,17 @@ def anomaly_detection_agent_node(state: ClaimsInvestigationState) -> Dict[str, A
             "significance": "High-value catastrophic damage lacking independent verification"
         })
 
+    # 4. Narrative Substance & Vagueness Void Check
+    desc = str(claim_data.get("incident_description", "")).strip()
+    words = desc.split()
+    if (len(words) <= 3 and claim_amount > 5000) or (len(words) < 6 and severity in ["Severe", "Catastrophic"]):
+        outliers.append({
+            "type": "Narrative Insufficiency Void",
+            "metric": f"'{desc}' ({len(words)} word{'s' if len(words) != 1 else ''})",
+            "baseline": "Forensic narrative detail (origin, context, damage scope)",
+            "significance": f"Critical lack of incident circumstances for a €{claim_amount:,.2f} {severity} loss"
+        })
+
     anomaly_findings = {
         "isolation_forest_anomaly_score": anomaly_score,
         "is_statistical_outlier": is_anomaly or len(outliers) > 0,
@@ -89,6 +100,6 @@ def anomaly_detection_agent_node(state: ClaimsInvestigationState) -> Dict[str, A
     return {
         "anomaly_findings": anomaly_findings,
         "statistical_outliers": outliers,
-        "requires_investigation_handoff": eval_result.get("requires_investigation_handoff", False),
+        "requires_investigation_handoff": eval_result.get("requires_investigation_handoff", False) or len(outliers) > 0,
         "audit_log": [audit_entry]
     }

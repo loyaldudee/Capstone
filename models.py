@@ -79,6 +79,7 @@ class InvestigationRecord(Base):
     executive_summary = Column(Text)
     evidence_checklist = Column(Text)  # JSON-encoded string
     audit_log = Column(Text)            # JSON-encoded string
+    advisor_guidance = Column(Text, nullable=True)  # JSON-encoded string
     investigated_at = Column(DateTime, default=datetime.utcnow)
 
     claim = relationship("Claim", back_populates="investigations")

@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aegis - AI Insurance Claims Intelligence Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <!-- Navigation Header -->
+  <header class="navbar">
+    <div class="nav-brand">
+      <div class="brand-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        </svg>
+      </div>
+      <div>
+        <h1 class="brand-title">AEGIS CLAIMS INTELLIGENCE</h1>
+        <p class="brand-subtitle">Multi-Agent Forensic Investigation & Decision Support</p>
+      </div>
+    </div>
+
+    <div class="nav-metrics">
+      <div class="metric-pill">
+        <span class="pill-label">Total Claims</span>
+        <span class="pill-value" id="stat-total-claims">1,800</span>
+      </div>
+      <div class="metric-pill pill-warning">
+        <span class="pill-label">SIU Flagged</span>
+        <span class="pill-value" id="stat-siu-flagged">--</span>
+      </div>
+      <div class="metric-pill pill-success">
+        <span class="pill-label">Model ROC-AUC</span>
+        <span class="pill-value">0.9467</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" id="btn-open-eval-modal">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+        </svg>
+        Evaluation Benchmark
+      </button>
+      <a href="/ingest" class="btn btn-primary btn-sm" style="text-decoration: none;">
+        ⚡ Kafka Ingestion Portal
+      </a>
+    </div>
+  </header>
+
+
+  <!-- Main Application Container -->
+  <main class="app-layout">
+    <!-- Left Column: Claims Explorer & Vector Search -->
+    <aside class="sidebar-panel">
+      <!-- Search Mode Tabs -->
+      <div class="tab-header">
+        <button class="tab-btn active" id="tab-claims-list">Claims Explorer</button>
+        <button class="tab-btn" id="tab-semantic-search">Semantic Search</button>
+      </div>
+
+      <!-- Tab 1: Claims List View -->
+      <div class="tab-content" id="view-claims-list">
+        <div class="filter-controls">
+          <input type="text" id="input-search-claims" class="input-field" placeholder="Search by Claim ID or Customer...">
+          <div class="filter-row">
+            <select id="select-policy-filter" class="select-field">
+              <option value="">All Policies</option>
+              <option value="Auto">Auto</option>
+              <option value="Fire_Property">Fire / Property</option>
+              <option value="Boat_Marine">Boat / Marine</option>
+              <option value="Private_Accident">Private Accident</option>
+              <option value="Third_Party_Private">Third Party</option>
+            </select>
+            <select id="select-status-filter" class="select-field">
+              <option value="">All Statuses</option>
+              <option value="Pending Review">Pending Review</option>
+              <option value="Approved">Approved</option>
+              <option value="Documentation Review">Documentation</option>
+              <option value="SIU Escalation">SIU Escalation</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="claims-list-container" id="claims-list-container">
+          <div class="loading-spinner">Loading claims database...</div>
+        </div>
+      </div>
+
+      <!-- Tab 2: Natural Language Semantic Vector Search -->
+      <div class="tab-content hidden" id="view-semantic-search">
+        <div class="semantic-search-box">
+          <p class="section-hint">Query the 1,800 incident descriptions using dense ChromaDB vector search:</p>
+          <textarea id="input-semantic-query" class="textarea-field" rows="3" placeholder="e.g. Single vehicle collided with utility pole in heavy snow..."></textarea>
+          <button class="btn btn-primary btn-block" id="btn-run-semantic-search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+            </svg>
+            Semantic Vector Query
+          </button>
+        </div>
+        <div class="search-results-container" id="semantic-results-container">
+          <p class="placeholder-text">Enter an incident description above to discover similar claims.</p>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Right Column: Active Claim Dossier & Multi-Agent Investigation -->
+    <section class="dossier-panel" id="dossier-panel">
+      <!-- Empty State -->
+      <div class="empty-dossier" id="empty-dossier">
+        <div class="empty-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+          </svg>
+        </div>
+        <h3>No Claim Selected</h3>
+        <p>Select any claim from the explorer on the left or perform a semantic vector search to begin investigation.</p>
+      </div>
+
+      <!-- Active Dossier Content -->
+      <div class="dossier-content hidden" id="active-dossier-content">
+        <!-- Top Dossier Banner -->
+        <div class="dossier-header-card">
+          <div class="dossier-title-group">
+            <div class="title-with-badge">
+              <h2 id="dossier-claim-id">CLM-00000</h2>
+              <span class="badge" id="dossier-status-badge">Pending Review</span>
+            </div>
+            <p class="dossier-meta">
+              Customer: <span class="highlight" id="dossier-customer-id">CUST_00000</span> |
+              Date of Loss: <span id="dossier-incident-date">2024-00-00</span> |
+              Claim Filing Date: <span id="dossier-claim-date">2024-00-00</span>
+            </p>
+          </div>
+          <div class="dossier-actions">
+            <button class="btn btn-accent btn-glow" id="btn-trigger-investigation">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="5 3 19 12 5 21 5 3"/>
+              </svg>
+              Run LangGraph Multi-Agent
+            </button>
+          </div>
+        </div>
+
+        <!-- Fact Cards Grid -->
+        <div class="fact-cards-grid">
+          <div class="fact-card">
+            <span class="fact-label">Claim Amount</span>
+            <span class="fact-value fact-highlight" id="dossier-claim-amount">€0.00</span>
+            <span class="fact-sub" id="dossier-severity-badge">Moderate Loss</span>
+          </div>
+          <div class="fact-card">
+            <span class="fact-label">Policy Line</span>
+            <span class="fact-value" id="dossier-policy-type">Auto</span>
+            <span class="fact-sub" id="dossier-policy-count">Active Policies: 1</span>
+          </div>
+          <div class="fact-card">
+            <span class="fact-label">Reporting Lag</span>
+            <span class="fact-value" id="dossier-reporting-delay">0 days</span>
+            <span class="fact-sub">Standard: 0 - 7 days</span>
+          </div>
+          <div class="fact-card">
+            <span class="fact-label">Verification Reports</span>
+            <span class="fact-value" id="dossier-police-report">Police: Yes</span>
+            <span class="fact-sub" id="dossier-witness">Witness: Yes</span>
+          </div>
+        </div>
+
+        <!-- Policyholder Context & Incident Narrative -->
+        <div class="card card-surface">
+          <h3 class="card-title">Policyholder Profile & Incident Description</h3>
+          <div class="profile-chips" id="dossier-profile-chips">
+            <span class="chip">Demographic Class: Loading...</span>
+            <span class="chip">Purchasing Power: Tier 5/8</span>
+          </div>
+          <div class="narrative-box">
+            <p id="dossier-incident-description">Loading incident narrative...</p>
+          </div>
+        </div>
+
+        <!-- MULTI-AGENT INVESTIGATION RESULTS (Dynamically Populated) -->
+        <div class="investigation-results-container hidden" id="investigation-results-section">
+          <!-- Risk Banner -->
+          <div class="risk-assessment-banner" id="risk-assessment-banner">
+            <div class="risk-gauge-container">
+              <div class="risk-circle-wrapper">
+                <span class="risk-score-display" id="agent-composite-score">0%</span>
+                <span class="risk-score-label">Risk Probability</span>
+              </div>
+            </div>
+            <div class="risk-summary-text">
+              <div class="risk-tier-row">
+                <span class="badge badge-lg" id="agent-risk-tier-badge">MEDIUM RISK</span>
+                <span class="handoff-pill" id="agent-handoff-pill">A2A Handoff: Active</span>
+              </div>
+              <h4 id="agent-action-heading">Standard Claim Processing</h4>
+              <p id="agent-evidence-summary">Summary statement...</p>
+            </div>
+          </div>
+
+          <!-- SIU Evidence Checklist -->
+          <div class="card card-warning" id="siu-checklist-card">
+            <h3 class="card-title">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              Special Investigation Unit (SIU) Evidence Checklist
+            </h3>
+            <ul class="checklist-items" id="siu-checklist-list">
+              <li>No critical flags detected.</li>
+            </ul>
+          </div>
+
+          <!-- Executive Summary Brief (Generated by LLM) -->
+          <div class="card card-surface">
+            <div class="card-header-flex">
+              <h3 class="card-title">Claims Summarization Agent Brief</h3>
+              <span class="badge badge-ai">Live AI Intelligence</span>
+            </div>
+            <div class="summary-markdown-content" id="agent-executive-summary">
+              Generating structured brief...
+            </div>
+          </div>
+
+          <!-- Similar Historical Claims from ChromaDB -->
+          <div class="card card-surface">
+            <h3 class="card-title">Similar Historical Claims (Vector Nearest Neighbors)</h3>
+            <div class="similar-claims-grid" id="similar-claims-container">
+              <p class="placeholder-text">Searching ChromaDB vector index...</p>
+            </div>
+          </div>
+
+          <!-- A2A Communication Audit Log -->
+          <div class="card card-surface">
+            <h3 class="card-title">LangGraph Agent-to-Agent (A2A) Audit Trace</h3>
+            <div class="audit-timeline" id="audit-timeline-container">
+              <!-- Dynamically injected timeline items -->
+            </div>
+          </div>
+
+          <!-- Human-in-the-Loop Decision Gate -->
+          <div class="card card-decision-gate">
+            <div class="decision-header">
+              <div class="decision-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div>
+                <h3 class="card-title">Human-in-the-Loop Reviewer Gate</h3>
+                <p class="decision-sub">Final settlement decisions require human adjuster sign-off pursuant to PRD Task 3.</p>
+              </div>
+            </div>
+
+            <div class="decision-controls">
+              <textarea id="input-adjuster-notes" class="textarea-field" rows="2" placeholder="Enter adjuster audit justification notes..."></textarea>
+              <div class="decision-buttons">
+                <button class="btn btn-success" id="btn-decision-approve">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="20 6 9 17 4 12"/>
+                  </svg>
+                  Approve Claim
+                </button>
+                <button class="btn btn-warning" id="btn-decision-docs">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  Request Documentation
+                </button>
+                <button class="btn btn-danger" id="btn-decision-siu">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+                  </svg>
+                  Refer to SIU Investigation
+                </button>
+              </div>
+            </div>
+            <div class="decision-status-message hidden" id="decision-status-message"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Evaluation Benchmark Modal -->
+  <div class="modal-backdrop hidden" id="modal-eval-backdrop">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>System Evaluation & Verification Benchmarks</h2>
+        <button class="btn-close" id="btn-close-eval-modal">&times;</button>
+      </div>
+      <div class="modal-body" id="modal-eval-body">
+        <div class="loading-spinner">Loading benchmark data...</div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

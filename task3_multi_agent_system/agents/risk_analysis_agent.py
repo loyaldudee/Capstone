@@ -47,9 +47,19 @@ def claims_risk_analysis_agent_node(state: ClaimsInvestigationState) -> Dict[str
     risk_prob = eval_result.get("risk_probability", 0.0)
     risk_tier = eval_result.get("risk_tier", "Low")
 
-    # Policy Coverage Check
+    # Policy Coverage & Narrative Validation Check
+    incident_desc = str(claim_data.get("incident_description", "")).strip()
+    words = incident_desc.split()
+    claim_amount = float(claim_data.get("claim_amount", 0.0))
+    severity = str(claim_data.get("incident_severity", "Moderate"))
+
     if policy_count == 0:
         coverage_status = f"INVALID: No active policies on record for line '{policy_type}'"
+    elif (len(words) <= 3 and claim_amount > 5000) or (len(words) < 6 and severity in ["Severe", "Catastrophic"]):
+        coverage_status = (
+            f"SUSPENDED: Policy exists ({policy_count} active), but incident description "
+            f"'{incident_desc}' ({len(words)} word{'s' if len(words) != 1 else ''}) lacks required forensic detail to substantiate a {severity} loss of €{claim_amount:,.2f}."
+        )
     else:
         coverage_status = f"VALID: {policy_count} active policy/policies on record for '{policy_type}'"
 

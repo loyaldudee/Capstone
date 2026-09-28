@@ -157,22 +157,30 @@ def submit_single_claim(payload: Dict[str, Any] = Body(...)):
                 }
             }
         else:
-            # Kafka unavailable — fallback to direct processing
-            cleaned_record = IngestionWorker.process_and_persist_claim(payload)
+            # =========================================================================
+            # [FALLBACK MODE COMMENTED OUT - UNCOMMENT FOR PRESENTATION IF NEEDED]
+            # =========================================================================
+            # cleaned_record = IngestionWorker.process_and_persist_claim(payload)
+            # log_ingestion_event(
+            #     stage="API Gateway (Fallback)",
+            #     claim_id=cleaned_record.get("claim_id", "UNKNOWN"),
+            #     message=f"Kafka offline. Claim processed directly via fallback pipeline.",
+            #     status="WARNING"
+            # )
+            # return {
+            #     "success": True,
+            #     "message": "Kafka offline. Claim processed directly via fallback pipeline.",
+            #     "published_to_kafka": False,
+            #     "cleaned_data": cleaned_record
+            # }
+            # =========================================================================
 
-            log_ingestion_event(
-                stage="API Gateway (Fallback)",
-                claim_id=cleaned_record.get("claim_id", "UNKNOWN"),
-                message=f"Kafka offline. Claim processed directly via fallback pipeline.",
-                status="WARNING"
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Kafka broker is offline or unreachable on port 9092. Ingestion requires an active Kafka broker."
             )
-
-            return {
-                "success": True,
-                "message": "Kafka offline. Claim processed directly via fallback pipeline.",
-                "published_to_kafka": False,
-                "cleaned_data": cleaned_record
-            }
+    except HTTPException:
+        raise
     except Exception as e:
         log_ingestion_event(
             stage="API Gateway Error",
@@ -215,9 +223,18 @@ async def upload_batch_csv(file: UploadFile = File(...)):
             if KafkaProducerManager.publish_raw_claim(row):
                 published_kafka_count += 1
             else:
-                # Fallback: process directly if Kafka is down
-                IngestionWorker.process_and_persist_claim(row)
-                direct_processed_count += 1
+                # =====================================================================
+                # [FALLBACK MODE COMMENTED OUT - UNCOMMENT FOR PRESENTATION IF NEEDED]
+                # =====================================================================
+                # IngestionWorker.process_and_persist_claim(row)
+                # direct_processed_count += 1
+                pass
+
+        if published_kafka_count == 0 and len(rows) > 0:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail="Kafka broker is offline or unreachable on port 9092. Streaming batch ingestion aborted."
+            )
 
         # Start consumer to process the Kafka messages
         if published_kafka_count > 0:
@@ -226,10 +243,10 @@ async def upload_batch_csv(file: UploadFile = File(...)):
         return {
             "success": True,
             "filename": file.filename,
-            "total_records_ingested": published_kafka_count + direct_processed_count,
+            "total_records_ingested": published_kafka_count,
             "kafka_messages_published": published_kafka_count,
-            "direct_fallback_count": direct_processed_count,
-            "mode": "Kafka Streaming" if published_kafka_count > 0 else "Direct Fallback"
+            "direct_fallback_count": 0,
+            "mode": "Kafka Streaming"
         }
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"CSV Batch Ingestion error: {str(e)}")

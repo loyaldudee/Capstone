@@ -29,9 +29,11 @@ def investigation_support_agent_node(state: ClaimsInvestigationState) -> Dict[st
     # Compile Evidence Checklist
     checklist: List[str] = []
 
-    # 1. Coverage Check
+    # 1. Coverage & Narrative Check
     if "INVALID" in coverage_status:
         checklist.append("[CRITICAL] Policy Coverage Failure: Verify active policy registry before any disbursement.")
+    elif "SUSPENDED" in coverage_status:
+        checklist.append("[CRITICAL] Narrative Insufficiency: Loss description lacks essential details to substantiate claim. Disbursement suspended.")
 
     # 2. Amount Outliers
     for out in outliers:

@@ -78,6 +78,18 @@ app.include_router(ingest_router)
 # Mount Static Assets
 if os.path.exists(STATIC_DIR):
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+    assets_dir = os.path.join(STATIC_DIR, "assets")
+    if os.path.exists(assets_dir):
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+
+# Dynamic fallback handler for any assets built by Vite
+@app.get("/assets/{asset_name:path}", include_in_schema=False)
+def serve_vite_asset(asset_name: str):
+    target = os.path.join(STATIC_DIR, "assets", asset_name)
+    if os.path.exists(target):
+        return FileResponse(target)
+    raise HTTPException(status_code=404, detail=f"Asset {asset_name} not found")
 
 
 # Root Web Dashboard Entry Point
@@ -95,11 +107,23 @@ def serve_dashboard():
 # Dedicated Kafka Ingestion Portal Entry Point
 @app.get("/ingest", summary="Kafka Ingestion & Sanitation Portal UI")
 def serve_ingest_portal():
-    ingest_path = os.path.join(STATIC_DIR, "ingest.html")
-    if os.path.exists(ingest_path):
-        return FileResponse(ingest_path)
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
     return JSONResponse(
-        content={"message": "Ingest Portal ingest.html not found."},
+        content={"message": "Web UI index.html not found."},
+        status_code=404
+    )
+
+
+# Dedicated Semantic Vector Search Entry Point
+@app.get("/search", summary="ChromaDB Semantic Vector Search UI")
+def serve_search_portal():
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return JSONResponse(
+        content={"message": "Web UI index.html not found."},
         status_code=404
     )
 

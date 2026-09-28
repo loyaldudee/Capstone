@@ -23,6 +23,7 @@ from task3_multi_agent_system.agents.risk_analysis_agent import claims_risk_anal
 from task3_multi_agent_system.agents.anomaly_agent import anomaly_detection_agent_node
 from task3_multi_agent_system.agents.summarization_agent import claims_summarization_agent_node
 from task3_multi_agent_system.agents.investigation_agent import investigation_support_agent_node
+from task3_multi_agent_system.agents.advisor_agent import claims_advisor_agent_node
 
 
 def route_handoff(state: ClaimsInvestigationState) -> Literal["investigate", "routine_finish"]:
@@ -39,12 +40,13 @@ def build_claims_multi_agent_graph():
     """Builds and compiles the StateGraph workflow."""
     workflow = StateGraph(ClaimsInvestigationState)
 
-    # 1. Register the 5 Agent Nodes
+    # 1. Register the 6 Agent Nodes
     workflow.add_node("retrieval_agent", claims_retrieval_agent_node)
     workflow.add_node("risk_analysis_agent", claims_risk_analysis_agent_node)
     workflow.add_node("anomaly_detection_agent", anomaly_detection_agent_node)
     workflow.add_node("summarization_agent", claims_summarization_agent_node)
     workflow.add_node("investigation_support_agent", investigation_support_agent_node)
+    workflow.add_node("advisor_agent", claims_advisor_agent_node)
 
     # 2. Parallel Fan-Out: Specialists run concurrently from START
     workflow.add_edge(START, "retrieval_agent")
@@ -62,12 +64,15 @@ def build_claims_multi_agent_graph():
         route_handoff,
         {
             "investigate": "investigation_support_agent",
-            "routine_finish": END
+            "routine_finish": "advisor_agent"
         }
     )
 
-    # 5. Investigation Support completes the workflow
-    workflow.add_edge("investigation_support_agent", END)
+    # 5. Investigation Support hands off to Advisor Agent
+    workflow.add_edge("investigation_support_agent", "advisor_agent")
+
+    # 6. Advisor Agent completes the workflow
+    workflow.add_edge("advisor_agent", END)
 
     # Compile the graph
     app = workflow.compile()

@@ -57,6 +57,7 @@ class InvestigationSummary(BaseModel):
     evidence_checklist: List[str] = []
     audit_log: List[Dict[str, Any]] = []
     investigated_at: Optional[str] = None
+    advisor_guidance: Optional[Dict[str, Any]] = None
 
 
 class ClaimDetailResponse(BaseModel):
@@ -115,6 +116,7 @@ class InvestigationResponse(BaseModel):
     similar_claims: List[Dict[str, Any]]
     audit_log: List[Dict[str, Any]]
     current_status: str
+    advisor_guidance: Optional[Dict[str, Any]] = None
 
 
 # -------------------------------------------------------------------------

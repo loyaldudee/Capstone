@@ -1,0 +1,6 @@
+claim_id,customer_id,policy_type,claim_amount,policy_count,policy_contribution_tier,purchasing_power_class,reporting_delay_days,prior_claims_count,incident_type,incident_severity,police_report_filed,witness_present,incident_date,claim_date,incident_description
+CLM-CLN-001,CUST-9001,Auto,12450.00,2,3,5,2,0,Collision,Moderate,Yes,Yes,2026-03-01,2026-03-03,Rear-end collision at traffic signal on Highway 101. Moderate damage to rear bumper and tail lights.
+CLM-CLN-002,CUST-9002,Fire_Property,48200.00,1,5,7,0,1,Fire,Severe,Yes,No,2026-03-05,2026-03-05,Kitchen electrical fire causing extensive structural and smoke damage across ground floor.
+CLM-CLN-003,CUST-9003,Boat_Marine,8900.00,3,2,4,4,0,Water Damage,Minor,No,Yes,2026-03-08,2026-03-12,Hull scraped along marina pier during high tide wind gusts causing minor fiberglass cracking.
+CLM-CLN-004,CUST-9004,Life_Health,3400.00,1,4,6,1,0,Medical Emergency,Minor,No,No,2026-03-10,2026-03-11,Outpatient emergency room admission for fractured clavicle following accidental slip on icy pavement.
+CLM-CLN-005,CUST-9005,Accident_Liability,18500.00,2,3,5,5,2,Other,Moderate,Yes,Yes,2026-03-14,2026-03-19,Customer slip and fall incident on retail premises resulting in knee soft tissue injury.

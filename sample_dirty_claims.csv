@@ -1,0 +1,6 @@
+claim_id,customer_id,policy_type,claim_amount,policy_count,policy_contribution_tier,purchasing_power_class,reporting_delay_days,prior_claims_count,incident_type,incident_severity,police_report_filed,witness_present,incident_date,claim_date,incident_description
+,NULL,car,"$24,500.75",2.0,Tier 4,,-3,None,collision,severe,true,1,2026/02/14,,
+clm_dirty_002,,home,"€62,000",,5,8,12,3,fire,CATASTROPHIC,Y,FALSE,2026-01-20 18:30:00,2026-02-01,blaze
+CLM-MESSY-03,CUST-MESSY-03,yacht,15000.99 EUR,1,2,Class 6,0,0,water damage,minor,n,0,2026-02-28,2026-02-28,bilge pump failure water entered engine bay
+,NONE,medical,"$5,820",-1,,,,medical emergency,moderate,no,yes,,,Emergency appendectomy during business trip abroad.
+NONE,,casualty,"29,999.50",3,3,5,8,1,Other,unknown_sev,1,true,2026-03-01,2026-03-09,Third-party customer delivery driver slip on loading ramp.

@@ -28,6 +28,14 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 def init_db():
     """Initializes tables and seeds initial clean records if empty."""
     Base.metadata.create_all(bind=engine)
+    # Safe migration for new columns
+    try:
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("ALTER TABLE investigation_records ADD COLUMN advisor_guidance TEXT"))
+            conn.commit()
+    except Exception:
+        pass
     db = SessionLocal()
 
     try:

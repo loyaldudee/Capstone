@@ -8,6 +8,7 @@ services:
     image: postgres:15-alpine
     container_name: aegis_postgres_db
     restart: always
+    mem_limit: 256m
     environment:
       POSTGRES_USER: aegis_user
       POSTGRES_PASSWORD: aegis_secure_password
@@ -30,6 +31,7 @@ services:
     image: dpage/pgadmin4:latest
     container_name: aegis_pgadmin
     restart: always
+    mem_limit: 256m
     environment:
       PGADMIN_DEFAULT_EMAIL: admin@aegis.com
       PGADMIN_DEFAULT_PASSWORD: admin123
@@ -45,9 +47,11 @@ services:
     image: confluentinc/cp-zookeeper:7.5.0
     container_name: aegis_zookeeper
     restart: always
+    mem_limit: 256m
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
+      KAFKA_HEAP_OPTS: "-Xmx128M -Xms64M"
     ports:
       - "2181:2181"
 
@@ -55,6 +59,7 @@ services:
     image: confluentinc/cp-kafka:7.5.0
     container_name: aegis_kafka
     restart: always
+    mem_limit: 512m
     depends_on:
       - zookeeper
     ports:
@@ -65,6 +70,7 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_HEAP_OPTS: "-Xmx384M -Xms128M"
 
 volumes:
   postgres_data:

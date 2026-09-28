@@ -164,6 +164,13 @@ def get_claim_dossier(claim_id: str, db: Session = Depends(get_db)):
             except Exception:
                 audit = []
 
+        adv_guidance = None
+        if hasattr(latest_inv, "advisor_guidance") and latest_inv.advisor_guidance:
+            try:
+                adv_guidance = json.loads(latest_inv.advisor_guidance)
+            except Exception:
+                adv_guidance = None
+
         inv_data = {
             "composite_risk_score": latest_inv.composite_risk_score,
             "risk_tier": latest_inv.risk_tier,
@@ -173,6 +180,7 @@ def get_claim_dossier(claim_id: str, db: Session = Depends(get_db)):
             "executive_summary": latest_inv.executive_summary,
             "evidence_checklist": checklist,
             "audit_log": audit,
+            "advisor_guidance": adv_guidance,
             "investigated_at": latest_inv.investigated_at.isoformat() if latest_inv.investigated_at else None
         }
 
@@ -268,6 +276,7 @@ def investigate_claim(claim_id: str, db: Session = Depends(get_db)):
         risk_tier = risk_analysis.get("preliminary_risk_tier", "Low")
         is_anomaly = anomaly_findings.get("is_anomaly", False)
         checklist = result_state.get("siu_evidence_checklist", [])
+        advisor_guidance = result_state.get("advisor_guidance", {})
         recommendation = result_state.get("final_recommended_action") or result_state.get("retrieval_insights", "Standard Review")
         executive_summary = result_state.get("executive_summary", "")
         similar_claims = result_state.get("similar_claims", [])
@@ -283,6 +292,7 @@ def investigate_claim(claim_id: str, db: Session = Depends(get_db)):
             executive_summary=str(executive_summary),
             evidence_checklist=json.dumps(checklist),
             audit_log=json.dumps(audit_log),
+            advisor_guidance=json.dumps(advisor_guidance) if advisor_guidance else None,
             investigated_at=datetime.utcnow()
         )
         db.add(inv_record)
@@ -302,6 +312,7 @@ def investigate_claim(claim_id: str, db: Session = Depends(get_db)):
             "recommendation": recommendation,
             "executive_summary": executive_summary,
             "evidence_checklist": checklist,
+            "advisor_guidance": advisor_guidance,
             "similar_claims": similar_claims,
             "audit_log": audit_log,
             "current_status": claim.claim_status

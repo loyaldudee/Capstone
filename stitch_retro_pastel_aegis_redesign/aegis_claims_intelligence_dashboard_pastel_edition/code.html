@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:ital,wght@0,300..800;1,300..800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary-fixed-dim":"#89d3d9","surface":"#f9f9ff","background":"#f9f9ff","tertiary-fixed":"#ffd9df","primary-fixed":"#a5eff5","surface-container":"#e7eeff","on-tertiary-fixed-variant":"#7c2940","on-tertiary-fixed":"#3f0016","surface-bright":"#f9f9ff","inverse-primary":"#89d3d9","primary":"#12686e","tertiary":"#994157","on-tertiary":"#ffffff","secondary-fixed":"#e4dfff","on-primary":"#ffffff","outline":"#6f797a","surface-dim":"#cfdaf1","on-secondary-fixed-variant":"#464365","secondary":"#5e5a7e","on-secondary":"#ffffff","on-tertiary-container":"#853147","outline-variant":"#bec8c9","on-background":"#111c2c","inverse-on-surface":"#ebf1ff","on-error":"#ffffff","surface-container-lowest":"#ffffff","on-secondary-container":"#5e5b7f","error":"#ba1a1a","tertiary-fixed-dim":"#ffb1c0","surface-variant":"#d8e3f9","surface-container-highest":"#d8e3f9","on-surface-variant":"#3f4949","on-surface":"#111c2c","tertiary-container":"#ffa8b9","surface-tint":"#12686e","on-secondary-fixed":"#1a1737","primary-container":"#83ccd2","on-primary-container":"#00575c","error-container":"#ffdad6","secondary-fixed-dim":"#c7c2eb","on-primary-fixed":"#002022","surface-container-low":"#f0f3ff","secondary-container":"#dbd5ff","on-primary-fixed-variant":"#004f54","inverse-surface":"#263142","on-error-container":"#93000a","surface-container-high":"#dee9ff"},borderRadius:{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},spacing:{"space-xl":"2rem","gutter-compact":"0.75rem","space-xs":"0.25rem","space-sm":"0.5rem","gutter":"1rem","margin":"1.5rem","margin-mobile":"1rem","space-md":"0.75rem","space-lg":"1.25rem"},fontFamily:{"title-md":["Hanken Grotesk"],"label-sm":["Hanken Grotesk"],"headline-sm":["Hanken Grotesk"],"display-lg-mobile":["Hanken Grotesk"],"code-num":["Hanken Grotesk"],"headline-md":["Hanken Grotesk"],"label-md":["Hanken Grotesk"],"body-sm":["Hanken Grotesk"],"body-md":["Hanken Grotesk"],"headline-lg":["Hanken Grotesk"],"display-lg":["Hanken Grotesk"],"body-lg":["Hanken Grotesk"]},fontSize:{"title-md":["16px",{lineHeight:"22px",fontWeight:"600"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.04em",fontWeight:"600"}],"headline-sm":["18px",{lineHeight:"24px",fontWeight:"600"}],"display-lg-mobile":["30px",{lineHeight:"38px",letterSpacing:"-0.015em",fontWeight:"700"}],"code-num":["13px",{lineHeight:"16px",letterSpacing:"-0.01em",fontWeight:"500"}],"headline-md":["22px",{lineHeight:"28px",letterSpacing:"-0.005em",fontWeight:"600"}],"label-md":["12px",{lineHeight:"16px",letterSpacing:"0.02em",fontWeight:"600"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"body-md":["13px",{lineHeight:"18px",fontWeight:"400"}],"headline-lg":["28px",{lineHeight:"36px",letterSpacing:"-0.01em",fontWeight:"600"}],"display-lg":["40px",{lineHeight:"48px",letterSpacing:"-0.02em",fontWeight:"700"}],"body-lg":["15px",{lineHeight:"22px",fontWeight:"400"}]}}}};</script></head><body class="bg-background font-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 right-0 h-16 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex items-center justify-between px-margin"><div class="flex items-center gap-space-md"><img alt="Aegis Pastel Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WH2ChRAHe5Ln0OZ4xHrLgErHSDGza4ZbKdC2AcvJLeljVochuBW2FxTHeywAmSs1rAJiAelP4HTElTzDDbesmWq8sbvuV2doGklBvgJMBpFMALpSN68c3iweV7Qm3m6fkOf5vxXljFZbyRo-zwC62SX7kjXpRZhYgD0e2uEXubm3raYIqFFUZLBYUE8dr9vstzAn-fI26ds-QAF57V95oausohgBrZG2B85fY6KjpdWZsjZmDqiSuKWnw"/><div class="flex flex-col"><span class="font-title-md text-title-md text-primary tracking-tight">Aegis Claims Intelligence</span><span class="font-label-sm text-label-sm text-on-surface-variant">Forensic Claims Investigation &amp; Streaming Engine</span></div></div><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-title-md"><a aria-current="page" class="px-space-md py-space-xs rounded-xl transition-colors bg-primary-container text-on-primary-container font-title-md" data-path="claims-explorer-and-intelligence" href="#">Claims Explorer &amp; Intelligence</a><a class="px-space-md py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="kafka-stream-portal" href="#">Kafka Ingestion &amp; Stream Portal</a><a class="px-space-md py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="benchmark-evaluation" href="#">Benchmark Evaluation (ROC-AUC 0.9467)</a><a class="px-space-md py-space-xs rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="rest-api-docs" href="#">REST API Docs</a></nav><div class="flex items-center gap-space-md"><div class="flex items-center gap-space-xs bg-surface-container px-space-md py-space-xs rounded-full"><span class="w-2 h-2 rounded-full bg-primary"></span><span class="font-label-sm text-label-sm text-on-surface-variant">JD - Senior Adjuster</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></header><aside class="fixed left-0 top-16 bottom-0 w-64 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex flex-col justify-between py-space-md px-space-sm"><div class="flex flex-col gap-space-md"><div class="px-space-md"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Workspace Operations</span></div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-primary-container text-on-primary-container font-title-md"><a aria-current="page" class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl transition-colors bg-primary-container text-on-primary-container font-title-md" data-path="claims-explorer-and-intelligence" href="#"><span class="material-symbols-outlined text-[18px]">table_chart</span><span>Claims Queue &amp; Explorer</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="kafka-stream-portal" href="#"><span class="material-symbols-outlined text-[18px]">stream</span><span>Kafka Stream Portal</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="benchmark-evaluation" href="#"><span class="material-symbols-outlined text-[18px]">analytics</span><span>Benchmark Evaluation</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="forensic-dossier" href="#"><span class="material-symbols-outlined text-[18px]">folder_special</span><span>Forensic Dossier</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="agent-orchestration" href="#"><span class="material-symbols-outlined text-[18px]">hub</span><span>Agent Orchestration</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl font-label-md text-label-md text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" data-path="rest-api-docs" href="#"><span class="material-symbols-outlined text-[18px]">terminal</span><span>REST API Docs</span></a></nav></div><div class="p-space-md mx-space-xs rounded-xl bg-surface-container-low flex flex-col gap-space-xs"><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Buffer State</span><span class="px-space-xs py-[2px] rounded bg-primary-container text-on-primary-container font-label-sm text-label-sm font-semibold">OPTIMAL</span></div><div class="flex items-center justify-between"><span class="font-label-sm text-label-sm text-on-surface-variant">Cluster Latency</span><span class="font-code-num text-code-num text-on-surface font-semibold">14ms</span></div><div class="w-full bg-surface-container-high h-1.5 rounded-full overflow-hidden mt-space-xs"><div class="bg-primary h-full rounded-full w-[82%]"></div></div></div></aside><div class="pl-64"><main class="w-full pt-16 px-margin pb-space-xl bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Forensic Banner / Status Layer -->
+<div class="flex flex-col xl:flex-row xl:items-center justify-between gap-space-md mb-space-lg bg-surface-container-lowest p-space-lg rounded-xl shadow-sm">
+<div class="flex flex-col gap-space-xs">
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center gap-space-xs bg-primary/10 text-primary px-space-sm py-[2px] rounded-full">
+<span class="inline-block w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm font-semibold uppercase tracking-wider">Live Ingestion Telemetry</span>
+</div>
+<span class="font-code-num text-code-num text-on-surface-variant font-semibold">SYS.REV 4.2.89</span>
+<span class="text-outline-variant">•</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">NODE-EU-CENTRAL-01</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface font-bold tracking-tight">
+        Forensic Claims Intelligence Console
+      </h1>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-3xl">
+        Automated multi-agent graph triage &amp; neural vector similarity scanner operating over COIL-2000 distribution streams.
+      </p>
+</div>
+<!-- Active Operational Badges -->
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center gap-space-xs bg-surface-container-low px-space-md py-space-sm rounded-xl">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Model Performance</span>
+<span class="font-code-num text-code-num text-on-surface font-semibold">ROC-AUC: 0.9467</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs bg-[#B2EAD3]/30 px-space-md py-space-sm rounded-xl">
+<span class="material-symbols-outlined text-[#154B35] text-[18px]">dataset</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-[#154B35] uppercase font-semibold">ChromaDB Sync</span>
+<span class="font-code-num text-code-num text-[#154B35] font-semibold">ACTIVE (1,800 Vecs)</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs bg-primary-container text-on-primary-container px-space-md py-space-sm rounded-xl">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm uppercase font-semibold">LangGraph Bus</span>
+<span class="font-code-num text-code-num font-semibold">5-Agent Mesh OK</span>
+</div>
+</div>
+</div>
+</div>
+<!-- KPI Stat Cards Grid (6 Cards) -->
+<div class="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-6 gap-space-md mb-space-lg">
+<!-- Stat 1: Total Claims -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="absolute top-0 left-0 right-0 h-[3px] bg-[#83CCD2]"></div>
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase font-semibold tracking-wider">Total Claims</span>
+<span class="material-symbols-outlined text-primary text-[18px]">layers</span>
+</div>
+<div>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">1,811</span>
+<div class="flex items-center gap-space-xs mt-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-semibold text-primary">Ingest Batch #82</span>
+<span>(100% Vol)</span>
+</div>
+</div>
+</div>
+<!-- Stat 2: Pending Review -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="absolute top-0 left-0 right-0 h-[3px] bg-[#E5B558]"></div>
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase font-semibold tracking-wider">Pending Review</span>
+<span class="material-symbols-outlined text-[#8A6300] text-[18px]">hourglass_top</span>
+</div>
+<div>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">42</span>
+<div class="flex items-center gap-space-xs mt-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-semibold text-[#8A6300]">Prioritized Queue</span>
+<span>(2.3% Pnd)</span>
+</div>
+</div>
+</div>
+<!-- Stat 3: Approved -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="absolute top-0 left-0 right-0 h-[3px] bg-[#B2EAD3]"></div>
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase font-semibold tracking-wider">Approved</span>
+<span class="material-symbols-outlined text-[#154B35] text-[18px]">check_circle</span>
+</div>
+<div>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">1,420</span>
+<div class="flex items-center gap-space-xs mt-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-semibold text-[#154B35]">Auto-Cleared</span>
+<span>(78.4%)</span>
+</div>
+</div>
+</div>
+<!-- Stat 4: Doc Review -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="absolute top-0 left-0 right-0 h-[3px] bg-[#D2CCF2]"></div>
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase font-semibold tracking-wider">Doc Review</span>
+<span class="material-symbols-outlined text-[#464365] text-[18px]">description</span>
+</div>
+<div>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">184</span>
+<div class="flex items-center gap-space-xs mt-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-semibold text-[#464365]">Proofs Needed</span>
+<span>(10.2%)</span>
+</div>
+</div>
+</div>
+<!-- Stat 5: SIU Escalated -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="absolute top-0 left-0 right-0 h-[3px] bg-[#F68BA2]"></div>
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase font-semibold tracking-wider">SIU Escalated</span>
+<span class="material-symbols-outlined text-tertiary text-[18px]">warning</span>
+</div>
+<div>
+<span class="font-headline-lg text-headline-lg font-bold text-tertiary tracking-tight">14</span>
+<div class="flex items-center gap-space-xs mt-space-xs text-tertiary font-label-sm text-label-sm">
+<span class="font-semibold">Critical Rings</span>
+<span>(0.7%)</span>
+</div>
+</div>
+</div>
+<!-- Stat 6: LangGraph Runs -->
+<div class="relative overflow-hidden bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col justify-between">
+<div class="absolute top-0 left-0 right-0 h-[3px] bg-[#BEB9E2]"></div>
+<div class="flex items-center justify-between text-on-surface-variant mb-space-xs">
+<span class="font-label-sm text-label-sm uppercase font-semibold tracking-wider">LangGraph Runs</span>
+<span class="material-symbols-outlined text-secondary text-[18px]">account_tree</span>
+</div>
+<div>
+<span class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">151</span>
+<div class="flex items-center gap-space-xs mt-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="font-semibold text-secondary">5-Agent Audits</span>
+<span>(8.3%)</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Two-Column Analytical Workspace -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: Claims Ledger & Triage Stream (5 Cols) -->
+<div class="xl:col-span-5 flex flex-col gap-space-md">
+<!-- Ledger Control Card -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+<!-- Tab Toggle Bar -->
+<div class="flex items-center justify-between bg-surface-container-low p-space-xs rounded-xl">
+<button class="flex-1 py-space-xs px-space-sm rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md transition-all shadow-sm flex items-center justify-center gap-space-xs" id="tabExplorerBtn">
+<span class="material-symbols-outlined text-[16px]">view_list</span>
+<span>Claims Explorer</span>
+</button>
+<button class="flex-1 py-space-xs px-space-sm rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all flex items-center justify-center gap-space-xs" id="tabChromaBtn">
+<span class="material-symbols-outlined text-[16px]">bubble_chart</span>
+<span>ChromaDB Vector (1,800)</span>
+</button>
+</div>
+<!-- Search Bar -->
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full pl-9 pr-space-md py-space-xs bg-surface-container-low text-on-surface font-body-md text-body-md rounded-lg focus:outline-none focus:bg-surface-container-lowest transition-all" placeholder="Search by Claim ID, customer, or incident..." type="text" value="CLM-INGEST-01807"/>
+<button class="absolute right-2 px-space-xs py-[2px] bg-surface-container text-on-surface-variant font-code-num text-[10px] rounded uppercase font-semibold">
+            ⌘K
+          </button>
+</div>
+<!-- Filter Dropdowns Row -->
+<div class="flex items-center gap-space-sm">
+<div class="flex-1 flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Policy Line</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low px-space-sm py-space-xs rounded-lg font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer">
+<option>All Policies (Auto, Fire, Health)</option>
+<option selected="">Auto / Motor Vehicles (20)</option>
+<option>Property / Fire (12)</option>
+<option>Commercial Liability (8)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-on-surface-variant pointer-events-none text-[16px]">expand_more</span>
+</div>
+</div>
+<div class="flex-1 flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Queue State</label>
+<div class="relative">
+<select class="w-full appearance-none bg-surface-container-low px-space-sm py-space-xs rounded-lg font-label-md text-label-md text-on-surface focus:outline-none cursor-pointer">
+<option selected="">Pending Review (42)</option>
+<option>SIU Flagged (14)</option>
+<option>Doc Verification Required</option>
+<option>Auto-Approved (1,420)</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-2 text-on-surface-variant pointer-events-none text-[16px]">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Claims Queue List -->
+<div class="flex flex-col gap-space-xs mt-space-xs max-h-[520px] overflow-y-auto pr-1">
+<!-- Claim 1 (Selected Active) -->
+<div class="p-space-sm rounded-xl bg-primary-fixed/25 flex flex-col gap-space-xs cursor-pointer shadow-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-[#E5B558]"></span>
+<span class="font-code-num text-code-num font-bold text-on-surface">CLM-INGEST-01807</span>
+<span class="px-space-xs py-[1px] bg-[#D2CCF2]/60 text-[#3D356A] rounded font-label-sm text-label-sm font-semibold">Auto</span>
+</div>
+<span class="font-code-num text-code-num font-bold text-on-surface">€24,500.75</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="truncate max-w-[200px]">CUST_08712 • Autobahn Section A9</span>
+<span class="px-space-xs py-[2px] rounded bg-[#E5B558]/20 text-[#8A6300] font-semibold">Pending Review</span>
+</div>
+</div>
+<!-- Claim 2 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low/70 hover:bg-surface-container-low transition-colors flex flex-col gap-space-xs cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-[#F68BA2]"></span>
+<span class="font-code-num text-code-num font-bold text-on-surface">CLM-INGEST-01811</span>
+<span class="px-space-xs py-[1px] bg-[#D2CCF2]/60 text-[#3D356A] rounded font-label-sm text-label-sm font-semibold">Auto</span>
+</div>
+<span class="font-code-num text-code-num font-bold text-tertiary">€29,999.50</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="truncate max-w-[200px]">CUST_04102 • Stolen Vehicle Ring</span>
+<span class="px-space-xs py-[2px] rounded bg-[#F68BA2]/25 text-tertiary font-semibold">SIU Escalated</span>
+</div>
+</div>
+<!-- Claim 3 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low/70 hover:bg-surface-container-low transition-colors flex flex-col gap-space-xs cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-[#E5B558]"></span>
+<span class="font-code-num text-code-num font-bold text-on-surface">CLM-INGEST-01810</span>
+<span class="px-space-xs py-[1px] bg-[#D2CCF2]/60 text-[#3D356A] rounded font-label-sm text-label-sm font-semibold">Fire</span>
+</div>
+<span class="font-code-num text-code-num font-bold text-on-surface">€5,820.00</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="truncate max-w-[200px]">CUST_09914 • Basement Electrical Short</span>
+<span class="px-space-xs py-[2px] rounded bg-[#E5B558]/20 text-[#8A6300] font-semibold">Pending Review</span>
+</div>
+</div>
+<!-- Claim 4 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low/70 hover:bg-surface-container-low transition-colors flex flex-col gap-space-xs cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-[#B2EAD3]"></span>
+<span class="font-code-num text-code-num font-bold text-on-surface">CLM-INGEST-01801</span>
+<span class="px-space-xs py-[1px] bg-[#D2CCF2]/60 text-[#3D356A] rounded font-label-sm text-label-sm font-semibold">Liability</span>
+</div>
+<span class="font-code-num text-code-num font-bold text-on-surface">€1,450.00</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="truncate max-w-[200px]">CUST_01289 • Minor Slip and Fall</span>
+<span class="px-space-xs py-[2px] rounded bg-[#B2EAD3]/30 text-[#154B35] font-semibold">Auto-Approved</span>
+</div>
+</div>
+<!-- Claim 5 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low/70 hover:bg-surface-container-low transition-colors flex flex-col gap-space-xs cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-[#E5B558]"></span>
+<span class="font-code-num text-code-num font-bold text-on-surface">CLM-CLN-005</span>
+<span class="px-space-xs py-[1px] bg-[#D2CCF2]/60 text-[#3D356A] rounded font-label-sm text-label-sm font-semibold">Health</span>
+</div>
+<span class="font-code-num text-code-num font-bold text-on-surface">€18,500.00</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="truncate max-w-[200px]">CUST_07621 • Inpatient Orthopedic</span>
+<span class="px-space-xs py-[2px] rounded bg-[#E5B558]/20 text-[#8A6300] font-semibold">Pending Review</span>
+</div>
+</div>
+<!-- Claim 6 -->
+<div class="p-space-sm rounded-xl bg-surface-container-low/70 hover:bg-surface-container-low transition-colors flex flex-col gap-space-xs cursor-pointer">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="w-2.5 h-2.5 rounded-full bg-[#F68BA2]"></span>
+<span class="font-code-num text-code-num font-bold text-on-surface">CLM_DIRTY_002</span>
+<span class="px-space-xs py-[1px] bg-[#D2CCF2]/60 text-[#3D356A] rounded font-label-sm text-label-sm font-semibold">Commercial</span>
+</div>
+<span class="font-code-num text-code-num font-bold text-tertiary">€62,000.00</span>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-label-sm text-label-sm">
+<span class="truncate max-w-[200px]">CUST_00341 • Warehouse Water Spill</span>
+<span class="px-space-xs py-[2px] rounded bg-[#F68BA2]/25 text-tertiary font-semibold">SIU Escalated</span>
+</div>
+</div>
+</div>
+<!-- Pagination Controls -->
+<div class="flex items-center justify-between pt-space-xs text-on-surface-variant font-label-md text-label-md">
+<button class="px-space-sm py-space-xs bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors disabled:opacity-50">
+            &lt; Prev
+          </button>
+<div class="flex items-center gap-1 font-code-num">
+<span class="w-7 h-7 flex items-center justify-center rounded-lg bg-primary-container text-on-primary-container font-semibold">1</span>
+<span class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-container-low cursor-pointer">2</span>
+<span class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-container-low cursor-pointer">3</span>
+<span>...</span>
+<span class="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-surface-container-low cursor-pointer">182</span>
+</div>
+<button class="px-space-sm py-space-xs bg-surface-container-low rounded-lg hover:bg-surface-container transition-colors">
+            Next &gt;
+          </button>
+</div>
+</div>
+<!-- Live Stream Terminal Widget -->
+<div class="bg-inverse-surface text-inverse-on-surface p-space-md rounded-xl shadow-md flex flex-col gap-space-xs">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="w-2 h-2 rounded-full bg-[#B2EAD3] animate-ping"></span>
+<span class="font-code-num text-[11px] font-bold tracking-wider uppercase text-[#89d3d9]">COIL-2000 INGESTION CLUSTER</span>
+</div>
+<span class="px-space-xs py-[1px] bg-primary/30 text-[#89d3d9] font-code-num text-[10px] rounded">BROKER 9092 OK</span>
+</div>
+<div class="font-code-num text-[11px] leading-[17px] text-[#cfdaf1] flex flex-col gap-1 max-h-36 overflow-hidden">
+<p><span class="text-[#89d3d9]">14:22:01.012</span> [TOPIC:claims.unprocessed] ACK offset=90214 part=0 len=412B</p>
+<p><span class="text-[#89d3d9]">14:22:01.085</span> [CHROMA:vectorizer] Generated dense-dim-768 for CLM-01807 in 14.2ms</p>
+<p><span class="text-[#89d3d9]">14:22:01.120</span> [AGENT:sanitizer] 0 NaN found, schema coerced to float32_v1</p>
+<p><span class="text-[#ffb1c0]">14:22:01.240</span> [AGENT:anomaly_siu] Metric outlier: Amount €24.5k &gt; 94th percentile</p>
+<p><span class="text-[#89d3d9]">14:22:01.310</span> [LANGGRAPH] Suspended at gate: Adjuster_Sign_Off (thread_01807)</p>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: Comprehensive Claim Dossier & Human-in-the-Loop Adjudication Gate (7 Cols) -->
+<div class="xl:col-span-7 flex flex-col gap-space-md">
+<!-- Dossier Master Card -->
+<div class="bg-surface-container-lowest p-space-lg rounded-xl shadow-sm flex flex-col gap-space-md">
+<!-- Dossier Header & Fast Audit Trigger CTA -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md pb-space-xs">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs flex-wrap">
+<span class="font-headline-md text-headline-md font-bold text-on-surface tracking-tight">DOSSIER # 1807</span>
+<span class="font-code-num text-code-num text-primary font-bold">CLM-INGEST-01807</span>
+<span class="px-space-xs py-[2px] rounded bg-[#E5B558]/20 text-[#8A6300] font-label-sm text-label-sm font-semibold">
+                PENDING REVIEW
+              </span>
+</div>
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-md text-label-md">
+<span>Customer: <strong class="text-on-surface">CUST_08712</strong></span>
+<span>•</span>
+<span>Incident: <strong>2026-09-28</strong></span>
+<span>•</span>
+<span>Filed: <strong>14:22 UTC</strong></span>
+</div>
+</div>
+<button class="px-space-md py-space-sm bg-primary text-on-primary font-label-md text-label-md rounded-xl hover:bg-primary/90 transition-all flex items-center justify-center gap-space-xs shadow-sm self-start sm:self-auto">
+<span class="material-symbols-outlined text-[18px]">play_circle</span>
+<span>Run 5-Agent LangGraph Audit</span>
+</button>
+</div>
+<!-- 4-Metric Grid Row -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm">
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium uppercase">Claimed Amount</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface mt-space-xs">€24,500.75</span>
+<span class="font-label-sm text-label-sm text-tertiary font-semibold mt-1">Severity: Severe</span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium uppercase">Policy Line</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface mt-space-xs">Auto (Motor)</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant mt-1">Active Lines: 20</span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium uppercase">Reporting Lag</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface mt-space-xs">0 Days</span>
+<span class="font-label-sm text-label-sm text-[#154B35] font-semibold mt-1">Bench: 0-7 Days</span>
+</div>
+<div class="bg-surface-container-low p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium uppercase">Official Reports</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface mt-space-xs">Police Filed</span>
+<span class="font-label-sm text-label-sm text-[#154B35] font-semibold mt-1">Witness: Yes</span>
+</div>
+</div>
+<!-- Customer Demographic Profile (COIL-2000 Baseline Vector) -->
+<div class="bg-surface-container-low/60 p-space-md rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm font-bold uppercase tracking-wider text-on-surface-variant">COIL-2000 Insured Sociodemographic Vector</span>
+<span class="px-space-xs py-[1px] bg-[#D2CCF2]/60 text-[#3D356A] font-label-sm text-label-sm rounded font-semibold">Matched Segment #33</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-md mt-space-xs text-on-surface">
+<div>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Demographic Group</span>
+<span class="font-label-md text-label-md font-semibold">Average Family (Modern)</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Age Bracket</span>
+<span class="font-label-md text-label-md font-semibold">40-50 years</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Purchasing Power</span>
+<span class="font-label-md text-label-md font-semibold">Tier 4 / 8</span>
+</div>
+<div>
+<span class="block font-label-sm text-label-sm text-on-surface-variant">Active Policies</span>
+<span class="font-label-md text-label-md font-semibold">2 (Car + Fire)</span>
+</div>
+</div>
+</div>
+<!-- Narrative Intake Section -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface font-title-md text-title-md font-semibold">
+<span class="material-symbols-outlined text-primary text-[18px]">subject</span>
+<span>Adjuster Intake Narrative &amp; Telematics</span>
+</div>
+<div class="bg-surface-container-low/40 p-space-md rounded-xl text-on-surface font-body-md text-body-md leading-relaxed italic">
+            “Severe collision incident reported for policy line Auto. The insured stated vehicle spun on black ice during heavy snow accumulation, colliding directly with dual-reinforced highway guardrail on Autobahn section A9. Significant front-end chassis deformation and radiator rupture reported. Driver and passenger uninjured; highway patrol responded.”
+          </div>
+</div>
+<!-- LangGraph Multi-Agent Orchestration Card -->
+<div class="bg-surface-container-lowest p-space-md rounded-xl shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-wrap items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-secondary text-[20px]">hub</span>
+<h2 class="font-title-md text-title-md font-bold text-on-surface">LangGraph Forensic Multi-Agent Orchestration</h2>
+</div>
+<div class="flex items-center gap-space-xs bg-[#B2EAD3]/40 text-[#154B35] px-space-sm py-[2px] rounded-full font-label-sm text-label-sm font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-[#154B35]"></span>
+<span>PIPELINE: COMPLETED</span>
+</div>
+</div>
+<!-- 5-Agent Step Progress Badges -->
+<div class="grid grid-cols-1 sm:grid-cols-5 gap-space-xs">
+<div class="bg-surface-container-low p-space-xs rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">01 Sanitizer</span>
+<div class="flex items-center gap-1 mt-1 text-[#154B35]">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="font-code-num text-[11px] font-bold">CLEAN_PASS</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">02 Demographic</span>
+<div class="flex items-center gap-1 mt-1 text-[#154B35]">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="font-code-num text-[11px] font-bold">COIL_EVAL OK</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">03 Vector Chroma</span>
+<div class="flex items-center gap-1 mt-1 text-primary">
+<span class="material-symbols-outlined text-[14px]">search_insights</span>
+<span class="font-code-num text-[11px] font-bold">89.2% SIMILAR</span>
+</div>
+</div>
+<div class="bg-[#F68BA2]/15 p-space-xs rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-tertiary font-semibold">04 SIU Anomaly</span>
+<div class="flex items-center gap-1 mt-1 text-tertiary">
+<span class="material-symbols-outlined text-[14px]">error</span>
+<span class="font-code-num text-[11px] font-bold">ALERT RAISED</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-space-xs rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold">05 Synthesis</span>
+<div class="flex items-center gap-1 mt-1 text-[#154B35]">
+<span class="material-symbols-outlined text-[14px]">check_circle</span>
+<span class="font-code-num text-[11px] font-bold">RESOLVED</span>
+</div>
+</div>
+</div>
+<!-- Composite Anomaly Score Bar -->
+<div class="flex flex-col gap-space-xs bg-surface-container-low/50 p-space-sm rounded-lg">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-on-surface-variant font-semibold uppercase">Composite Forensic Anomaly Score</span>
+<span class="font-code-num text-code-num font-bold text-tertiary">78.4% [Medium-High Anomaly Alert]</span>
+</div>
+<div class="w-full bg-surface-container-highest h-2 rounded-full overflow-hidden">
+<div class="h-full rounded-full bg-gradient-to-r from-primary via-[#E5B558] to-[#F68BA2] w-[78.4%]"></div>
+</div>
+</div>
+<!-- Synthesized Agent Findings -->
+<div class="flex flex-col gap-space-xs text-on-surface font-body-sm text-body-sm">
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-tertiary text-[16px] mt-0.5">priority_high</span>
+<span><strong>Flagged Amount Anomaly:</strong> €24,500.75 sits in the 94th percentile for Auto policy cohort in COIL-2000 distribution baseline.</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-[#154B35] text-[16px] mt-0.5">verified_user</span>
+<span><strong>Verified Police Validation:</strong> Official Highway Patrol incident cross-check validated via Bavarian precinct dispatch logs.</span>
+</div>
+<div class="flex items-start gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[16px] mt-0.5">hub</span>
+<span><strong>ChromaDB Vector Match:</strong> 89.2% cosine proximity to historical reference claim <em>CLM-HIST-8821 (Accidental Guardrail Breach - Approved)</em>.</span>
+</div>
+</div>
+</div>
+<!-- Human-in-the-Loop Adjudication Gate (Mandate: Adjuster_Sign_Off) -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-primary text-[20px]">how_to_reg</span>
+<span class="font-title-md text-title-md font-bold text-on-surface">Human-in-the-Loop Adjudication Gate</span>
+</div>
+<span class="font-code-num text-label-sm text-on-surface-variant font-semibold">MANDATE: Adjuster_Sign_Off</span>
+</div>
+<!-- Interactive Adjudication Choice Buttons -->
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-space-sm" id="adjudicationActionGroup">
+<button class="py-space-sm px-space-md rounded-xl bg-surface-container-lowest hover:bg-[#B2EAD3]/30 text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs shadow-sm transition-all focus:bg-[#B2EAD3]/40" type="button">
+<span class="material-symbols-outlined text-[#154B35] text-[18px]">task_alt</span>
+<span class="font-bold">Approve Claim</span>
+</button>
+<button class="py-space-sm px-space-md rounded-xl bg-surface-container-lowest hover:bg-[#D2CCF2]/40 text-on-surface font-label-md text-label-md flex items-center justify-center gap-space-xs shadow-sm transition-all focus:bg-[#D2CCF2]/50" type="button">
+<span class="material-symbols-outlined text-[#464365] text-[18px]">forward_to_inbox</span>
+<span class="font-bold">Request Docs</span>
+</button>
+<button class="py-space-sm px-space-md rounded-xl bg-[#F68BA2]/20 hover:bg-[#F68BA2]/30 text-tertiary font-label-md text-label-md flex items-center justify-center gap-space-xs shadow-sm transition-all focus:bg-[#F68BA2]/40" type="button">
+<span class="material-symbols-outlined text-tertiary text-[18px]">policy</span>
+<span class="font-bold">Escalate to SIU</span>
+</button>
+</div>
+<!-- Adjuster Findings Input Note -->
+<div class="flex flex-col gap-space-xs">
+<label class="font-label-sm text-label-sm text-on-surface-variant font-semibold">Senior Adjuster Forensic Evaluation Notes</label>
+<textarea class="w-full p-space-sm bg-surface-container-lowest text-on-surface font-body-sm text-body-sm rounded-lg focus:outline-none focus:ring-1 focus:ring-primary shadow-sm" rows="3">Police report verified with German highway patrol. Weather telematics confirm severe black ice conditions on Autobahn A9 at 14:15 CET. Chassis damage aligns with ChromaDB reference vector #8821. Recommend approval pending routine subrogation check against municipality highway safety division.</textarea>
+</div>
+<!-- Final Adjudication CTA & Cryptographic Sign-Off -->
+<div class="flex flex-col sm:flex-row items-center justify-between gap-space-md pt-space-xs">
+<div class="flex items-center gap-space-xs text-on-surface-variant font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">key</span>
+<span>SHA-256 Ledger Stamp: <span class="font-code-num font-semibold text-on-surface">9a8f...31c2</span></span>
+</div>
+<button class="w-full sm:w-auto px-space-lg py-space-sm bg-[#83CCD2] hover:bg-[#a5eff5] text-[#002022] font-label-md text-label-md font-bold rounded-xl shadow-sm transition-all flex items-center justify-center gap-space-xs" id="signOffBtn">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Record Final Adjudication Sign-Off</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+    // Tab switching micro-interaction
+    const tabExplorerBtn = document.getElementById('tabExplorerBtn');
+    const tabChromaBtn = document.getElementById('tabChromaBtn');
+
+    if (tabExplorerBtn && tabChromaBtn) {
+      tabExplorerBtn.addEventListener('click', () => {
+        tabExplorerBtn.className = 'flex-1 py-space-xs px-space-sm rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md transition-all shadow-sm flex items-center justify-center gap-space-xs';
+        tabChromaBtn.className = 'flex-1 py-space-xs px-space-sm rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all flex items-center justify-center gap-space-xs';
+      });
+
+      tabChromaBtn.addEventListener('click', () => {
+        tabChromaBtn.className = 'flex-1 py-space-xs px-space-sm rounded-lg bg-primary-container text-on-primary-container font-label-md text-label-md transition-all shadow-sm flex items-center justify-center gap-space-xs';
+        tabExplorerBtn.className = 'flex-1 py-space-xs px-space-sm rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all flex items-center justify-center gap-space-xs';
+      });
+    }
+
+    // Sign off action confirmation micro-interaction
+    const signOffBtn = document.getElementById('signOffBtn');
+    if (signOffBtn) {
+      signOffBtn.addEventListener('click', () => {
+        const originalContent = signOffBtn.innerHTML;
+        signOffBtn.innerHTML = '<span class="material-symbols-outlined text-[18px]">check_circle</span><span>Adjudication Recorded!</span>';
+        signOffBtn.classList.remove('bg-[#83CCD2]', 'text-[#002022]');
+        signOffBtn.classList.add('bg-[#B2EAD3]', 'text-[#154B35]');
+        
+        setTimeout(() => {
+          signOffBtn.innerHTML = originalContent;
+          signOffBtn.classList.remove('bg-[#B2EAD3]', 'text-[#154B35]');
+          signOffBtn.classList.add('bg-[#83CCD2]', 'text-[#002022]');
+        }, 2400);
+      });
+    }
+  </script>
+</div></main></div></body></html>
