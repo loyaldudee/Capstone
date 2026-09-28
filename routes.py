@@ -89,7 +89,8 @@ def list_claims(
             or_(
                 Claim.claim_id.ilike(f"%{query}%"),
                 Claim.customer_id.ilike(f"%{query}%"),
-                Claim.incident_type.ilike(f"%{query}%")
+                Claim.incident_type.ilike(f"%{query}%"),
+                Claim.incident_description.ilike(f"%{query}%")
             )
         )
 
@@ -101,7 +102,8 @@ def list_claims(
 
     total_count = q.count()
     offset = (page - 1) * limit
-    claims = q.order_by(Claim.claim_id).offset(offset).limit(limit).all()
+    claims = q.order_by(desc(Claim.claim_id)).offset(offset).limit(limit).all()
+
 
     formatted_claims = [
         {
@@ -377,3 +379,7 @@ def get_evaluation_metrics():
             data = json.load(f)
         return data
     raise HTTPException(status_code=404, detail="Evaluation report not found. Run evaluate_system.py first.")
+
+@router.get("/health")
+def health_check():
+    return {"status": "Aegis AI Claims Assistant is Live & Ready"}

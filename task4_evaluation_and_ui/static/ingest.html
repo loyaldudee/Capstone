@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aegis | Kafka Data Ingestion & Streaming Portal</title>
+  <link rel="stylesheet" href="/static/ingest.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header class="app-header">
+    <div class="brand-title">
+      <span>⚡ AEGIS</span> | Kafka Ingestion & Sanitation Portal
+    </div>
+    <div class="nav-links">
+      <a href="/" class="nav-btn">📊 Main Claims Dashboard</a>
+      <a href="/ingest" class="nav-btn active">📥 Kafka Ingestion Portal</a>
+      <a href="/docs" target="_blank" class="nav-btn">📖 REST OpenAPI Docs</a>
+    </div>
+  </header>
+
+  <div class="main-container">
+
+    <!-- Status Banner -->
+    <div class="status-banner">
+      <div>
+        <h3 style="font-size: 1rem; font-weight: 600;">Streaming Pipeline Health</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);" id="status-mode-desc">Checking Kafka Broker connectivity...</p>
+      </div>
+      <div class="status-pills">
+        <div class="pill">
+          <span class="dot amber" id="kafka-dot"></span>
+          <span id="kafka-status-text">Pipeline Status</span>
+        </div>
+
+        <div class="pill">
+          <span>Topic: <strong style="color: var(--accent-cyan);">raw-claims-ingest</strong></span>
+        </div>
+        <div class="pill">
+          <span>Broker: <strong style="color: var(--text-main);">localhost:9092</strong></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="ingest-grid">
+
+      <!-- Left Column: Single Intake Form -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <span class="panel-title">✍️ Manual Single Claim Intake</span>
+          <span style="font-size: 0.8rem; color: var(--text-muted);">Real-Time Kafka Event Streaming</span>
+        </div>
+
+        <form id="single-claim-form" style="display: flex; flex-direction: column; gap: 1rem;">
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Policy Line</label>
+              <select class="form-select" id="policy_type">
+                <option value="Auto">Auto (Motor)</option>
+                <option value="Fire_Property">Fire & Property</option>
+                <option value="Boat_Marine">Boat & Marine</option>
+                <option value="Life_Health">Life & Health</option>
+                <option value="Accident_Liability">Accident & Liability</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Claim Amount (€)</label>
+              <input type="text" class="form-input" id="claim_amount" placeholder="e.g. 14,500 € or 14500" value="14500">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Incident Type</label>
+              <select class="form-select" id="incident_type">
+                <option value="Collision">Collision</option>
+                <option value="Theft">Theft / Break-In</option>
+                <option value="Water Damage">Water Damage</option>
+                <option value="Fire">Fire / Explosion</option>
+                <option value="Vandalism">Vandalism</option>
+                <option value="Medical Emergency">Medical Emergency</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Incident Severity</label>
+              <select class="form-select" id="incident_severity">
+                <option value="Minor">Minor</option>
+                <option value="Moderate" selected>Moderate</option>
+                <option value="Severe">Severe</option>
+                <option value="Catastrophic">Catastrophic</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Reporting Delay (Days)</label>
+              <input type="number" class="form-input" id="reporting_delay_days" value="3" min="0">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Prior Claims Count</label>
+              <input type="number" class="form-input" id="prior_claims_count" value="0" min="0">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Police Report Filed?</label>
+              <select class="form-select" id="police_report_filed">
+                <option value="Yes">Yes</option>
+                <option value="No">No</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Witness Present?</label>
+              <select class="form-select" id="witness_present">
+                <option value="Yes">Yes</option>
+                <option value="No" selected>No</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Incident Narrative Description</label>
+            <textarea class="form-textarea" id="incident_description" rows="3" placeholder="Describe incident details...">Vehicle collided into road barrier on icy highway during snowstorm.</textarea>
+          </div>
+
+          <button type="submit" class="submit-btn" id="submit-btn">🚀 Sanitize & Stream to Kafka</button>
+        </form>
+
+        <div id="submit-response-box" style="display:none; background: rgba(0,242,254,0.05); border: 1px solid var(--accent-blue); padding: 1rem; border-radius: 8px;">
+          <h4 style="font-size: 0.85rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">Sanitized Output & Kafka Delivery:</h4>
+          <pre id="response-json" style="font-size: 0.8rem; font-family: monospace; color: #e5e7eb; overflow-x: auto;"></pre>
+        </div>
+      </div>
+
+      <!-- Right Column: Bulk CSV + Live Kafka Event Stream -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Bulk CSV Intake Card -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <span class="panel-title">📁 Bulk CSV Batch Streaming Upload</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Asynchronous Queue</span>
+          </div>
+
+          <div class="drop-zone" id="drop-zone">
+            <p style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem;">Drag & Drop Claims CSV File</p>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">Supports batch streaming ingestion into Kafka topic</p>
+            <input type="file" id="csv-file-input" accept=".csv" style="display: none;">
+            <button class="nav-btn" type="button" onclick="document.getElementById('csv-file-input').click()">Browse Computer</button>
+          </div>
+          <div id="csv-upload-status" style="font-size: 0.85rem; color: var(--accent-cyan);"></div>
+        </div>
+
+        <!-- Live Kafka Log Stream Terminal -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <span class="panel-title">🖥️ Live Kafka & Sanitation Event Stream Monitor</span>
+            <span style="font-size: 0.8rem; color: var(--accent-green);">● Auto-Refreshing</span>
+          </div>
+          <div class="terminal-window" id="terminal-window">
+            <div class="log-entry">
+              <span class="log-time">[System]</span>
+              <span class="log-msg">Initializing live streaming audit log monitor...</span>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
+    <!-- Recent Ingested Claims Verification Table -->
+    <div class="panel-card" style="margin-top: 1rem;">
+      <div class="panel-header">
+        <span class="panel-title">📋 Live Ingested Claims Register (Database Verification)</span>
+        <button class="nav-btn" onclick="fetchRecentIngestedClaims()">🔄 Refresh Table</button>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--panel-border); color: var(--text-muted); text-transform: uppercase;">
+              <th style="padding: 0.75rem;">Claim ID</th>
+              <th style="padding: 0.75rem;">Policy Line</th>
+              <th style="padding: 0.75rem;">Amount (€)</th>
+              <th style="padding: 0.75rem;">Severity</th>
+              <th style="padding: 0.75rem;">Narrative Description</th>
+              <th style="padding: 0.75rem;">Status</th>
+            </tr>
+          </thead>
+          <tbody id="ingested-claims-table-body">
+            <tr>
+              <td colspan="6" style="padding: 1rem; text-align: center; color: var(--text-muted);">Loading recent claims...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+  </div>
+
+  <script src="/static/ingest.js?v=4"></script>
+</body>
+</html>
+
+

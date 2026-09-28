@@ -26,6 +26,7 @@ if ROOT_DIR not in sys.path:
 
 from database import init_db
 from routes import router as api_router, get_vector_engine
+from ingestion_routes import ingest_router
 
 STATIC_DIR = os.path.join(ROOT_DIR, "task4_evaluation_and_ui", "static")
 
@@ -42,6 +43,13 @@ async def lifespan(app: FastAPI):
         print("[Aegis Startup] ChromaDB vector engine ready.")
     except Exception as e:
         print(f"[Aegis Startup Warning] Could not pre-warm vector engine: {e}")
+
+    print("[Aegis Startup] Starting Kafka consumer worker thread...")
+    try:
+        from ingestion_routes import start_kafka_consumer
+        start_kafka_consumer()
+    except Exception as e:
+        print(f"[Aegis Startup Warning] Could not start Kafka consumer: {e}")
 
     yield
     print("[Aegis Shutdown] Server shutting down cleanly.")
@@ -63,8 +71,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Mount Modular API Router
+# Mount Modular API Routers
 app.include_router(api_router)
+app.include_router(ingest_router)
 
 # Mount Static Assets
 if os.path.exists(STATIC_DIR):
@@ -81,6 +90,19 @@ def serve_dashboard():
         content={"message": "Aegis Claims Intelligence API active. Web UI index.html not found."},
         status_code=200
     )
+
+
+# Dedicated Kafka Ingestion Portal Entry Point
+@app.get("/ingest", summary="Kafka Ingestion & Sanitation Portal UI")
+def serve_ingest_portal():
+    ingest_path = os.path.join(STATIC_DIR, "ingest.html")
+    if os.path.exists(ingest_path):
+        return FileResponse(ingest_path)
+    return JSONResponse(
+        content={"message": "Ingest Portal ingest.html not found."},
+        status_code=404
+    )
+
 
 
 if __name__ == "__main__":
