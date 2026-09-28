@@ -1,5 +1,5 @@
 {
-  "evaluation_timestamp": "2026-09-27T10:28:09.581095",
+  "evaluation_timestamp": "2026-09-28T10:06:11.820268",
   "test_records_count": 360,
   "test_anomalies_count": 48,
   "models": {
@@ -11,54 +11,54 @@
       "role": "Anomaly Detection Agent Tool"
     },
     "random_forest_supervised": {
-      "roc_auc": 0.904,
-      "precision": 0.8378,
-      "recall": 0.6458,
-      "f1_score": 0.7294,
-      "accuracy": 0.9361,
+      "roc_auc": 0.8984,
+      "precision": 0.8824,
+      "recall": 0.625,
+      "f1_score": 0.7317,
+      "accuracy": 0.9389,
       "role": "Risk Analysis Agent & Prioritization Tool"
     }
   },
   "top_predictive_features": [
     {
       "feature": "reporting_delay_days",
-      "importance": 0.2376
-    },
-    {
-      "feature": "policy_contribution_tier",
-      "importance": 0.1825
+      "importance": 0.2486
     },
     {
       "feature": "claim_amount",
-      "importance": 0.1783
+      "importance": 0.1731
+    },
+    {
+      "feature": "policy_contribution_tier",
+      "importance": 0.1706
     },
     {
       "feature": "policy_count",
-      "importance": 0.1526
-    },
-    {
-      "feature": "police_report_filed_No",
-      "importance": 0.0298
+      "importance": 0.1363
     },
     {
       "feature": "police_report_filed_Yes",
-      "importance": 0.0281
+      "importance": 0.0283
+    },
+    {
+      "feature": "police_report_filed_No",
+      "importance": 0.0282
     },
     {
       "feature": "purchasing_power_class",
-      "importance": 0.0227
+      "importance": 0.0282
     },
     {
       "feature": "incident_severity_Severe",
-      "importance": 0.0179
+      "importance": 0.0175
     },
     {
-      "feature": "policy_type_Third_Party_Private",
-      "importance": 0.0131
+      "feature": "prior_claims_count",
+      "importance": 0.0147
     },
     {
-      "feature": "witness_present_Yes",
-      "importance": 0.0121
+      "feature": "witness_present_No",
+      "importance": 0.0146
     }
   ],
   "input_features": {
