@@ -32,6 +32,26 @@ if API_KEY and API_KEY != "xxx":
         print(f"Warning: Failed to initialize OpenAI client: {e}")
 
 
+def check_llm_status() -> tuple:
+    """
+    Checks if LLM API credentials and client are properly configured.
+    Returns (is_available: bool, reason_message: str).
+    Does NOT make a live API call — only validates configuration.
+    """
+    current_key = os.getenv("OPENAI_API_KEY", "").strip()
+    if not current_key or current_key == "xxx":
+        return False, "API key is not configured"
+
+    global client
+    if client is None:
+        try:
+            client = OpenAI(api_key=current_key, base_url=BASE_URL)
+        except Exception as e:
+            return False, f"Failed to initialize LLM client: {e}"
+
+    return True, "LLM service is available"
+
+
 def generate_llm_response(prompt: str, system_prompt: str = "You are an expert Insurance Claims Intelligence Assistant.") -> str:
     """
     Sends a chat completion request to the configured LLM endpoint.

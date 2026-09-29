@@ -79,6 +79,16 @@ export default function AdvisorGuidanceCard({
         </div>
       </div>
 
+      {/* ═══ LLM OFFLINE NOTICE ═══ */}
+      {guidance.llm_status === 'offline' && (
+        <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#FFF3E0]/60 border border-[#FFB74D]/40 text-[11px] text-[#E65100]">
+          <span className="material-symbols-outlined text-[18px] text-[#F57C00] shrink-0">cloud_off</span>
+          <span className="leading-snug font-medium">
+            {guidance.llm_status_message || '⚠️ LLM is not reachable right now. This recommendation is based on deterministic analysis of all agent findings.'}
+          </span>
+        </div>
+      )}
+
       {/* ═══ RATIONALE & RISK DRIVERS ═══ */}
       <div className="flex flex-col gap-2">
         <div className="p-2.5 rounded-lg bg-surface-container-lowest border border-outline-variant/15 text-[12px] text-on-surface leading-relaxed">

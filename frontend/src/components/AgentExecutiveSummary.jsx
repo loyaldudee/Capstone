@@ -95,8 +95,19 @@ function getSectionIcon(title) {
 export default function AgentExecutiveSummary({ summaryText, claimId }) {
   if (!summaryText) return null;
 
+  // Extract LLM offline notice if present at the start
+  let llmNotice = '';
+  let cleanedText = summaryText;
+  if (summaryText.startsWith('⚠️')) {
+    const noticeEnd = summaryText.indexOf('\n\n');
+    if (noticeEnd !== -1) {
+      llmNotice = summaryText.substring(0, noticeEnd).replace(/\*\*/g, '').trim();
+      cleanedText = summaryText.substring(noticeEnd + 2).trim();
+    }
+  }
+
   // Split into raw blocks by double newlines or single newlines followed by markdown headers/numbers
-  const rawBlocks = summaryText
+  const rawBlocks = cleanedText
     .split(/\n\s*\n/)
     .map((b) => b.trim())
     .filter(Boolean);
@@ -163,6 +174,14 @@ export default function AgentExecutiveSummary({ summaryText, claimId }) {
           )}
         </div>
       </div>
+
+      {/* LLM Offline Notice Banner */}
+      {llmNotice && (
+        <div className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#FFF3E0]/60 border border-[#FFB74D]/40 text-[11px] text-[#E65100]">
+          <span className="material-symbols-outlined text-[18px] text-[#F57C00] shrink-0">cloud_off</span>
+          <span className="leading-snug font-medium">{llmNotice}</span>
+        </div>
+      )}
 
       {/* Render Parsed Structured Sections */}
       {sections.length > 0 ? (

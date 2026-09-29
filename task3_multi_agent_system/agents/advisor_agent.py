@@ -16,7 +16,7 @@ ROOT_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
 
-from task3_multi_agent_system.llm_client import generate_llm_response
+from task3_multi_agent_system.llm_client import generate_llm_response, check_llm_status
 from task3_multi_agent_system.state import ClaimsInvestigationState
 
 
@@ -79,6 +79,8 @@ Respond in strictly valid JSON format with these exact keys:
 }}
 """
 
+    llm_available, llm_reason = check_llm_status()
+
     guidance = None
     raw_llm = generate_llm_response(prompt, system_prompt="You are an expert Senior Insurance Adjuster Advisor. Output ONLY valid JSON.")
     if raw_llm:
@@ -87,6 +89,8 @@ Respond in strictly valid JSON format with these exact keys:
             cleaned = re.sub(r"^```json\s*", "", raw_llm.strip())
             cleaned = re.sub(r"\s*```$", "", cleaned)
             guidance = json.loads(cleaned)
+            if guidance and isinstance(guidance, dict):
+                guidance["llm_status"] = "online"
         except Exception:
             pass
 
@@ -165,14 +169,20 @@ Respond in strictly valid JSON format with these exact keys:
             "key_risk_drivers": drivers or ["Standard review protocol indicated."],
             "claimant_inquiry_questions": questions[:4],
             "mandatory_documents": docs,
-            "prefilled_adjuster_notes": notes
+            "prefilled_adjuster_notes": notes,
+            "llm_status": "offline",
+            "llm_status_message": (
+                f"\u26a0\ufe0f LLM is not reachable right now ({llm_reason}). "
+                "This recommendation is based on deterministic analysis of all agent findings."
+            )
         }
 
+    llm_mode = "LLM-Powered" if guidance.get("llm_status") == "online" else f"Deterministic Fallback ({llm_reason})"
     audit_entry = {
         "timestamp": datetime.now().isoformat(),
         "agent": "Adjudication Advisor Agent",
         "action": "Strategic Decision Formulation",
-        "details": f"Formulated recommendation '{guidance.get('recommended_decision')}' with {len(guidance.get('claimant_inquiry_questions', []))} claimant inquiry prompts."
+        "details": f"Formulated recommendation '{guidance.get('recommended_decision')}' with {len(guidance.get('claimant_inquiry_questions', []))} claimant inquiry prompts. [Mode: {llm_mode}]"
     }
 
     return {

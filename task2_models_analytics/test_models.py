@@ -12,7 +12,7 @@ import joblib
 import pandas as pd
 import numpy as np
 from sklearn.metrics import classification_report, confusion_matrix, roc_auc_score
-from models.claims_risk_engine import ClaimsRiskEngine
+from task2_models_analytics.models.claims_risk_engine import ClaimsRiskEngine
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = os.path.dirname(BASE_DIR)
