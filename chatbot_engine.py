@@ -430,10 +430,22 @@ def process_chat_message(user_message: str, session_id: str = "default_session")
         history = [history[0]] + history[-(MAX_SESSION_TURNS * 2 - 1):]
         SESSION_STORE[session_id] = history
 
+    # Dynamic API key validation directly from .env file
+    from dotenv import dotenv_values
+    env_vals = dotenv_values(os.path.join(ROOT_DIR, ".env"))
+    current_key = (env_vals.get("OPENAI_API_KEY") or "").strip()
+
+    # If key is commented out or missing in .env, remove it from process memory
+    if current_key and current_key != "xxx":
+        os.environ["OPENAI_API_KEY"] = current_key
+    else:
+        os.environ.pop("OPENAI_API_KEY", None)
+        current_key = ""
+
     client = None
-    if OPENAI_API_KEY and OPENAI_API_KEY != "xxx":
+    if current_key:
         try:
-            client = OpenAI(api_key=OPENAI_API_KEY, base_url=OPENAI_BASE_URL)
+            client = OpenAI(api_key=current_key, base_url=OPENAI_BASE_URL)
         except Exception:
             client = None
 
@@ -515,17 +527,22 @@ def process_chat_message(user_message: str, session_id: str = "default_session")
             }
 
         except Exception as e:
-            print(f"Chat completion error: {e}")
+            print(f"Chat completion error: {e}. Falling back to offline deterministic engine.")
 
-    # Deterministic Local Fallback if LLM endpoint has an issue
+    # Deterministic Local Fallback if LLM endpoint or key is unavailable
     fallback_reply, fallback_tools, fallback_claims = _deterministic_chat_fallback(user_message)
     history.append({"role": "assistant", "content": fallback_reply})
     return {
         "reply": fallback_reply,
-        "tools_called": fallback_tools,
+        "tools_called": ["Offline Engine"] + fallback_tools if fallback_tools else [],
         "referenced_claims": fallback_claims,
         "session_id": session_id
     }
+
+
+OFFLINE_DISCLAIMER_NOTICE = (
+    "**[Offline Mode Active]**: *This response was created without any LLM. Please use an LLM API key for better responses.*\n\n"
+)
 
 
 def _format_tool_outputs_as_summary(tools_called: List[str], tool_outputs: List[Dict[str, Any]]) -> str:
@@ -556,75 +573,20 @@ def _format_tool_outputs_as_summary(tools_called: List[str], tool_outputs: List[
 
 
 def _deterministic_chat_fallback(user_query: str) -> tuple:
-    """Robust heuristic fallback for basic questions if remote LLM connection drops."""
+    """
+    Robust heuristic fallback for basic questions if remote LLM is offline or unconfigured.
+    Directly dispatches to the 4 local tools and attaches the disclaimer banner.
+    """
     q = user_query.lower()
     tools = []
 
-    # KPI questions
-    if "kpi" in q or "stats" in q or "overall" in q or "approval rate" in q or "benchmark" in q or "fraud rate" in q:
-        kpis = tool_get_system_kpis()
-        tools.append("get_system_kpis")
-        p = kpis.get("portfolio_summary", {})
-        b = kpis.get("verified_model_benchmarks", {})
-        text = (
-            f"### Aegis Portfolio Summary\n\n"
-            f"- **Total Claims**: {p.get('total_claims', 0):,}\n"
-            f"- **Pending Review**: {p.get('pending_review', 0):,}\n"
-            f"- **SIU Escalations**: {p.get('siu_escalated', 0):,}\n"
-            f"- **Approved Claims**: {p.get('approved', 0):,}\n"
-            f"- **Escalation Rate**: {p.get('escalation_rate', 0)}%\n\n"
-            f"**Model Verification Benchmarks**:\n"
-            f"- Risk Model ROC-AUC: **{b.get('risk_model_roc_auc', '0.947')}**\n"
-            f"- Anomaly Specificity: **{b.get('anomaly_specificity', '90.2%')}**\n"
-            f"- Vector Retrieval MRR: **{b.get('vector_retrieval_mrr', '1.000')}**"
-        )
-        return text, tools, []
-
-    # Specific claim inquiry (e.g. CLM-12345)
-    claim_match = re.search(r"CLM[_\-][A-Z0-9_\-]+", user_query, re.IGNORECASE)
-    if claim_match:
-        cid = claim_match.group(0).upper()
-        dossier = tool_get_claim_dossier(cid)
-        tools.append("get_claim_dossier")
-        if "error" in dossier:
-            return f"Claim `{cid}` was not found in the database. Please verify the identifier.", tools, []
-        inv = dossier.get("investigation_results") or {}
-        text = (
-            f"### Claim Dossier: `{cid}`\n\n"
-            f"- **Policy Line**: {dossier.get('policy_type')}\n"
-            f"- **Amount**: €{dossier.get('claim_amount', 0):,.2f}\n"
-            f"- **Status**: {dossier.get('claim_status')}\n"
-            f"- **Incident**: {dossier.get('incident_type')} ({dossier.get('incident_severity')})\n"
-            f"- **Reporting Delay**: {dossier.get('reporting_delay_days')} days | **Police Report**: {dossier.get('police_report_filed')}\n"
-        )
-        if inv:
-            text += (
-                f"\n**Forensic ML Assessment**:\n"
-                f"- Risk Tier: **{inv.get('risk_tier')}** (Score: {inv.get('composite_risk_score', 0):.2f})\n"
-                f"- Statistical Anomaly: **{'Yes' if inv.get('is_anomaly') else 'No'}**\n"
-                f"- Recommendation: {inv.get('recommendation', 'Standard Review')}\n"
-            )
-        return text, tools, [cid]
-
-    # Precedent search inquiry (e.g. 'find similar', 'water leak', 'staged accident')
-    if any(k in q for k in ["find", "similar", "precedent", "narrative", "water leak", "fire at", "collision"]):
-        results = tool_search_incident_precedents(query_text=user_query, top_k=3)
-        tools.append("search_incident_precedents")
-        cids = [r.get("claim_id") for r in results if "claim_id" in r]
-        text = f"### Top Precedent Matches from ChromaDB\n\n"
-        for idx, r in enumerate(results, 1):
-            if "claim_id" in r:
-                text += f"{idx}. **`{r.get('claim_id')}`** ({r.get('policy_type')} - €{r.get('claim_amount', 0):,.2f})\n"
-                text += f"   - *Incident*: {r.get('incident_description', '')[:140]}...\n"
-                text += f"   - *Similarity Score*: {r.get('similarity_score', 0):.3f}\n"
-        return text, tools, cids
-
-    # Check if query is related to insurance domain
+    # 1. Guardrail Check: Check if query is related to insurance domain
     insurance_keywords = [
         "claim", "policy", "incident", "accident", "damage", "fraud", "siu", "fire",
         "theft", "water", "car", "auto", "boat", "marine", "collision", "delay",
         "report", "police", "customer", "approved", "pending", "kpi", "stat", "amount",
-        "risk", "anomaly", "underwriting", "coverage", "benchmark", "adjuster"
+        "risk", "anomaly", "underwriting", "coverage", "benchmark", "adjuster", "how many",
+        "clm"
     ]
     if not any(k in q for k in insurance_keywords):
         return (
@@ -634,19 +596,111 @@ def _deterministic_chat_fallback(user_query: str) -> tuple:
             []
         )
 
-    # General DB query for legitimate insurance inquiries
-    res = tool_query_claims_db(limit=4)
+    # 2. Specific claim inquiry (e.g. CLM-12345 or CLM_DIRTY_002)
+    claim_match = re.search(r"CLM[_\-][A-Z0-9_\-]+", user_query, re.IGNORECASE)
+    if claim_match:
+        cid = claim_match.group(0).upper()
+        dossier = tool_get_claim_dossier(cid)
+        tools.append("get_claim_dossier")
+        if "error" in dossier:
+            return (
+                OFFLINE_DISCLAIMER_NOTICE + f"Claim `{cid}` was not found in the database. Please verify the identifier.",
+                tools,
+                []
+            )
+        inv = dossier.get("investigation_results") or {}
+        text = (
+            f"### Claim Dossier: `{cid}`\n\n"
+            f"- **Policy Line**: {dossier.get('policy_type')}\n"
+            f"- **Claim Amount**: €{dossier.get('claim_amount', 0):,.2f}\n"
+            f"- **Current Status**: {dossier.get('claim_status')}\n"
+            f"- **Incident**: {dossier.get('incident_type')} ({dossier.get('incident_severity')})\n"
+            f"- **Reporting Delay**: {dossier.get('reporting_delay_days')} days | **Police Report**: {dossier.get('police_report_filed')}\n"
+            f"- **Narrative**: {dossier.get('incident_description')}\n"
+        )
+        if inv:
+            text += (
+                f"\n**Forensic ML Assessment**:\n"
+                f"- Composite Risk Score: **{inv.get('composite_risk_score', 0):.2f}** ({inv.get('risk_tier')} Tier)\n"
+                f"- Statistical Anomaly: **{'Yes' if inv.get('is_anomaly') else 'No'}**\n"
+                f"- Recommendation: **{inv.get('recommendation', 'Standard Review')}**\n"
+            )
+        return OFFLINE_DISCLAIMER_NOTICE + text, tools, [cid]
+
+    # 3. KPI / Portfolio / Benchmark questions
+    if any(k in q for k in ["kpi", "stat", "overall", "approval rate", "escalation", "benchmark", "fraud rate", "roc", "mrr", "how many"]):
+        kpis = tool_get_system_kpis()
+        tools.append("get_system_kpis")
+        p = kpis.get("portfolio_summary", {})
+        b = kpis.get("verified_model_benchmarks", {})
+        text = (
+            f"### Aegis Portfolio Summary & Benchmarks\n\n"
+            f"- **Total Registered Claims**: {p.get('total_claims', 0):,}\n"
+            f"- **Pending Review**: {p.get('pending_review', 0):,}\n"
+            f"- **SIU Escalated Claims**: {p.get('siu_escalated', 0):,}\n"
+            f"- **Approved Claims**: {p.get('approved', 0):,}\n"
+            f"- **Approval Rate**: {p.get('approval_rate', 0)}%\n"
+            f"- **SIU Escalation Rate**: {p.get('escalation_rate', 0)}%\n\n"
+            f"**Model Verification Benchmarks**:\n"
+            f"- Supervised Risk Model ROC-AUC: **{b.get('risk_model_roc_auc', 0.9467)}**\n"
+            f"- Unsupervised Anomaly Specificity: **{b.get('anomaly_specificity', 0.9024)}**\n"
+            f"- Dense Vector Retrieval MRR: **{b.get('vector_retrieval_mrr', 1.000)}**\n"
+            f"- Factual Grounding Accuracy: **{b.get('grounding_accuracy', 1.0)}**"
+        )
+        return OFFLINE_DISCLAIMER_NOTICE + text, tools, []
+
+    # 4. Precedent search inquiry (narratives in ChromaDB)
+    if any(k in q for k in ["similar", "precedent", "narrative", "water leak", "flood", "fire at", "collision", "theft", "stolen", "pipe burst"]):
+        results = tool_search_incident_precedents(query_text=user_query, top_k=3)
+        tools.append("search_incident_precedents")
+        cids = [r.get("claim_id") for r in results if "claim_id" in r]
+        text = f"### Semantically Similar Precedents from ChromaDB\n\n"
+        for idx, r in enumerate(results, 1):
+            if "claim_id" in r:
+                text += f"{idx}. **`{r.get('claim_id')}`** ({r.get('policy_type')} - €{r.get('claim_amount', 0):,.2f})\n"
+                text += f"   - *Incident*: {r.get('incident_description', '')[:140]}...\n"
+                text += f"   - *Similarity Score*: {r.get('similarity_score', 0):.2f}\n"
+        return OFFLINE_DISCLAIMER_NOTICE + text, tools, cids
+
+    # 5. Filtered Database queries
+    filter_args = {"limit": 5}
+    if "auto" in q or "car" in q:
+        filter_args["policy_type"] = "Auto"
+    elif "fire" in q:
+        filter_args["policy_type"] = "Fire"
+    elif "boat" in q or "marine" in q:
+        filter_args["policy_type"] = "Boat"
+    elif "accident" in q or "liability" in q:
+        filter_args["policy_type"] = "Accident"
+
+    if "no police" in q or "without police" in q:
+        filter_args["police_report_filed"] = "No"
+
+    delay_match = re.search(r"delay\s*(?:over|>|greater than)?\s*(\d+)", q)
+    if delay_match:
+        filter_args["min_delay_days"] = int(delay_match.group(1))
+    elif "delay" in q:
+        filter_args["min_delay_days"] = 14
+
+    if "high risk" in q or "highest risk" in q or "top" in q:
+        filter_args["sort_by"] = "amount_desc"
+
+    res = tool_query_claims_db(**filter_args)
     tools.append("query_claims_db")
     claims = res.get("claims", [])
     cids = [c["claim_id"] for c in claims]
+
     text = (
-        f"I reviewed the claims database. Currently tracking **{res.get('total_matching_claims', 0):,} total claims**.\n\n"
-        f"Here are recent claims from the registry:\n"
+        f"### Claims Registry Query Results\n"
+        f"Found **{res.get('total_matching_claims', 0):,} matching claims** in the registry. Showing top {len(claims)}:\n\n"
     )
     for c in claims:
-        text += f"- **`{c['claim_id']}`**: €{c['claim_amount']:,.2f} ({c['policy_type']}, Status: {c['claim_status']})\n"
-    text += "\nYou can ask me to filter by policy line, find specific incident descriptions, or inspect any claim ID in detail."
-    return text, tools, cids
+        text += (
+            f"- **`{c['claim_id']}`**: €{c['claim_amount']:,.2f} | Policy: {c['policy_type']} | "
+            f"Status: {c['claim_status']} | Delay: {c['reporting_delay_days']} days | Police Report: {c['police_report_filed']}\n"
+        )
+    return OFFLINE_DISCLAIMER_NOTICE + text, tools, cids
+
 
 
 def reset_session(session_id: str):

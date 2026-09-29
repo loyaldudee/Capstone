@@ -225,6 +225,8 @@ export default function ChatAssistant({ onSelectClaim }) {
         return { label: '360° Dossier Inspection', icon: 'assignment', bg: 'bg-tertiary/15 text-tertiary border-tertiary/30' };
       case 'get_system_kpis':
         return { label: 'Portfolio Analytics Engine', icon: 'query_stats', bg: 'bg-primary-container text-on-primary-container border-outline/20' };
+      case 'Offline Engine':
+        return { label: 'Offline Rule Engine', icon: 'bolt', bg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-amber-500/30' };
       default:
         return { label: tool, icon: 'bolt', bg: 'bg-surface-container text-on-surface-variant border-outline/20' };
     }
