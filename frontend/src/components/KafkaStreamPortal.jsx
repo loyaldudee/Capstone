@@ -11,6 +11,7 @@ export default function KafkaStreamPortal({ onRefreshStats }) {
   const [logs, setLogs] = useState([]);
   const [loadingStatus, setLoadingStatus] = useState(false);
   const [logPollingActive, setLogPollingActive] = useState(true);
+  const clearOffsetRef = useRef(0);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -65,7 +66,8 @@ export default function KafkaStreamPortal({ onRefreshStats }) {
   const loadLogs = async () => {
     try {
       const data = await fetchIngestionLogs(100);
-      setLogs(data.logs || []);
+      const allLogs = data.logs || [];
+      setLogs(allLogs.slice(clearOffsetRef.current));
     } catch (err) {
       console.error(err);
     }
@@ -163,7 +165,10 @@ export default function KafkaStreamPortal({ onRefreshStats }) {
         {/* Right Header Buttons */}
         <div className="flex items-center gap-space-sm self-start lg:self-center">
           <button
-            onClick={() => setLogs([])}
+            onClick={() => {
+              clearOffsetRef.current = clearOffsetRef.current + logs.length;
+              setLogs([]);
+            }}
             className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-tertiary-fixed text-on-tertiary-container hover:bg-tertiary-container transition-colors shadow-xs font-label-md text-xs font-semibold"
           >
             <span className="material-symbols-outlined text-[16px] text-tertiary">delete_sweep</span>

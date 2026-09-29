@@ -10,6 +10,7 @@ Architecture:
   - main.py     : FastAPI server, lifespan, middleware & static mount
 """
 
+from fastapi import HTTPException
 import os
 import sys
 from contextlib import asynccontextmanager
