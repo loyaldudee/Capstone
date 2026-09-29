@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 
 # Load .env from root directory
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-load_dotenv(os.path.join(ROOT_DIR, ".env"))
+load_dotenv(os.path.join(ROOT_DIR, ".env"), override=True)
 
 API_KEY = os.getenv("OPENAI_API_KEY", "xxx")
 BASE_URL = os.getenv("OPENAI_BASE_URL", "https://api.aicredits.in/v1")
@@ -38,6 +38,8 @@ def check_llm_status() -> tuple:
     Returns (is_available: bool, reason_message: str).
     Does NOT make a live API call — only validates configuration.
     """
+    # Re-read .env to pick up any runtime changes (key added/removed)
+    load_dotenv(os.path.join(ROOT_DIR, ".env"), override=True)
     current_key = os.getenv("OPENAI_API_KEY", "").strip()
     if not current_key or current_key == "xxx":
         return False, "API key is not configured"

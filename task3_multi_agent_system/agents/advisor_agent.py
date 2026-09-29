@@ -169,13 +169,15 @@ Respond in strictly valid JSON format with these exact keys:
             "key_risk_drivers": drivers or ["Standard review protocol indicated."],
             "claimant_inquiry_questions": questions[:4],
             "mandatory_documents": docs,
-            "prefilled_adjuster_notes": notes,
-            "llm_status": "offline",
-            "llm_status_message": (
+            "prefilled_adjuster_notes": notes
+        }
+        # Only show offline banner when LLM is truly unreachable (missing key / init failure)
+        if not llm_available:
+            guidance["llm_status"] = "offline"
+            guidance["llm_status_message"] = (
                 f"\u26a0\ufe0f LLM is not reachable right now ({llm_reason}). "
                 "This recommendation is based on deterministic analysis of all agent findings."
             )
-        }
 
     llm_mode = "LLM-Powered" if guidance.get("llm_status") == "online" else f"Deterministic Fallback ({llm_reason})"
     audit_entry = {
