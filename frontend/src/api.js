@@ -117,3 +117,32 @@ export async function fetchBenchmarks() {
   if (!res.ok) throw new Error('Failed to load evaluation benchmarks');
   return res.json();
 }
+
+export async function sendChatMessage({ message, sessionId = 'default_adjuster' }) {
+  const res = await fetch(`${BASE_URL}/api/chat/message`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ message, session_id: sessionId }),
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    throw new Error(err.detail || 'Chat request failed');
+  }
+  return res.json();
+}
+
+export async function resetChatSession(sessionId = 'default_adjuster') {
+  const res = await fetch(`${BASE_URL}/api/chat/reset`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ session_id: sessionId }),
+  });
+  if (!res.ok) throw new Error('Failed to reset chat session');
+  return res.json();
+}
+
+export async function fetchChatSuggestions() {
+  const res = await fetch(`${BASE_URL}/api/chat/suggestions`);
+  if (!res.ok) throw new Error('Failed to load chat suggestions');
+  return res.json();
+}

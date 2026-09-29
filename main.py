@@ -28,6 +28,7 @@ if ROOT_DIR not in sys.path:
 from database import init_db
 from routes import router as api_router, get_vector_engine
 from ingestion_routes import ingest_router
+from chat_routes import chat_router
 
 STATIC_DIR = os.path.join(ROOT_DIR, "task4_evaluation_and_ui", "static")
 
@@ -75,6 +76,7 @@ app.add_middleware(
 # Mount Modular API Routers
 app.include_router(api_router)
 app.include_router(ingest_router)
+app.include_router(chat_router)
 
 # Mount Static Assets
 if os.path.exists(STATIC_DIR):
@@ -120,6 +122,18 @@ def serve_ingest_portal():
 # Dedicated Semantic Vector Search Entry Point
 @app.get("/search", summary="ChromaDB Semantic Vector Search UI")
 def serve_search_portal():
+    index_path = os.path.join(STATIC_DIR, "index.html")
+    if os.path.exists(index_path):
+        return FileResponse(index_path)
+    return JSONResponse(
+        content={"message": "Web UI index.html not found."},
+        status_code=404
+    )
+
+
+# Dedicated Adjuster AI Chatbot Entry Point
+@app.get("/chat", summary="Adjuster AI Chatbot UI")
+def serve_chat_portal():
     index_path = os.path.join(STATIC_DIR, "index.html")
     if os.path.exists(index_path):
         return FileResponse(index_path)

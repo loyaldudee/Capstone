@@ -7,6 +7,7 @@ import ClaimsTable from './components/ClaimsTable';
 import ClaimDossier from './components/ClaimDossier';
 import KafkaStreamPortal from './components/KafkaStreamPortal';
 import SearchClaims from './components/SearchClaims';
+import ChatAssistant from './components/ChatAssistant';
 import BenchmarkModal from './components/BenchmarkModal';
 import { fetchStats, fetchClaims, fetchClaimDossier } from './api';
 
@@ -15,6 +16,7 @@ export default function App() {
     if (typeof window !== 'undefined') {
       if (window.location.pathname === '/ingest') return 'ingest';
       if (window.location.pathname === '/search') return 'search';
+      if (window.location.pathname === '/chat') return 'chat';
     }
     return 'claims';
   });
@@ -23,7 +25,7 @@ export default function App() {
   const handleTabChange = (tab) => {
     setActiveTab(tab);
     if (typeof window !== 'undefined') {
-      const path = tab === 'ingest' ? '/ingest' : tab === 'search' ? '/search' : '/';
+      const path = tab === 'ingest' ? '/ingest' : tab === 'search' ? '/search' : tab === 'chat' ? '/chat' : '/';
       window.history.pushState(null, '', path);
     }
   };
@@ -219,6 +221,15 @@ export default function App() {
 
             {activeTab === 'search' && (
               <SearchClaims
+                onSelectClaim={(claimId) => {
+                  setSelectedClaimId(claimId);
+                  handleTabChange('claims');
+                }}
+              />
+            )}
+
+            {activeTab === 'chat' && (
+              <ChatAssistant
                 onSelectClaim={(claimId) => {
                   setSelectedClaimId(claimId);
                   handleTabChange('claims');

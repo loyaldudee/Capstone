@@ -50,6 +50,18 @@ export default function Header({ activeTab, setActiveTab, onOpenBenchmark }) {
         </button>
 
         <button
+          onClick={() => setActiveTab('chat')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all text-[12px] font-medium ${
+            activeTab === 'chat'
+              ? 'bg-primary-container text-on-primary-container font-bold shadow-sm'
+              : 'text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[16px]">smart_toy</span>
+          <span>AI Adjuster Chat</span>
+        </button>
+
+        <button
           onClick={() => setActiveTab('ingest')}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all text-[12px] font-medium ${
             activeTab === 'ingest'
