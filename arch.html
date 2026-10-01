@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claims AI System Architecture</title>
+<style>
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        padding: 30px;
+        background: #fff;
+        color: #000;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    .page {
+        width: 1200px;
+        max-width: 100%;
+        margin: auto;
+    }
+
+    h1 {
+        text-align: center;
+        font-size: 24px;
+        margin: 0 0 25px;
+        font-weight: 700;
+    }
+
+    .layer {
+        border: 2px solid #000;
+        padding: 18px 22px 22px;
+        margin-bottom: 14px;
+    }
+
+    .layer-title {
+        text-align: center;
+        font-size: 15px;
+        font-weight: bold;
+        margin-bottom: 18px;
+    }
+
+    .row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .box {
+        border: 1.5px solid #000;
+        padding: 14px 18px;
+        min-width: 210px;
+        text-align: center;
+        background: #fff;
+    }
+
+    .box strong {
+        display: block;
+        margin-bottom: 6px;
+    }
+
+    .box small {
+        font-size: 12px;
+    }
+
+    .arrow {
+        font-size: 22px;
+        font-weight: bold;
+    }
+
+    .down {
+        text-align: center;
+        font-size: 22px;
+        margin: -5px 0 8px;
+    }
+
+    .wide {
+        min-width: 280px;
+    }
+
+    .agents {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 12px;
+    }
+
+    .agent {
+        border: 1.5px solid #000;
+        padding: 14px;
+        text-align: center;
+    }
+
+    .merge {
+        width: 65%;
+        height: 25px;
+        margin: 0 auto 12px;
+        border-left: 1.5px solid #000;
+        border-right: 1.5px solid #000;
+        border-bottom: 1.5px solid #000;
+    }
+
+    .center {
+        display: flex;
+        justify-content: center;
+    }
+
+    .decision {
+        display: flex;
+        justify-content: center;
+        gap: 80px;
+        margin: 14px 0;
+        font-size: 13px;
+        text-align: center;
+    }
+
+    .branch {
+        border-top: 1px solid #000;
+        padding-top: 8px;
+        min-width: 150px;
+    }
+
+    .dashboard {
+        width: 75%;
+        margin: auto;
+        border: 1.5px solid #000;
+        padding: 15px;
+        text-align: center;
+    }
+
+    .items {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .item {
+        border: 1px solid #000;
+        padding: 7px 12px;
+        font-size: 12px;
+    }
+
+    .human {
+        width: 320px;
+        margin: auto;
+        border: 2px solid #000;
+        padding: 15px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    @media (max-width: 800px) {
+        body { padding: 15px; }
+        .agents { grid-template-columns: 1fr; }
+        .decision { gap: 20px; }
+        .dashboard { width: 100%; }
+    }
+</style>
+</head>
+
+<body>
+<div class="page">
+
+    <h1>Claims AI System Architecture</h1>
+
+    <!-- 1 -->
+    <div class="layer">
+        <div class="layer-title">1. DATA SOURCES &amp; INGESTION</div>
+
+        <div class="row">
+            <div class="box">
+                <strong>COIL 2000 Dataset</strong>
+                <small>Customer / Claim Data</small>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box wide">
+                <strong>Kafka Streaming Producer</strong>
+                <small>Real-time Claim Ingestion</small>
+            </div>
+
+            <div class="arrow">←</div>
+
+            <div class="box">
+                <strong>Batch CSV Upload</strong>
+                <small>Historical Claims</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="down">↓</div>
+
+    <!-- 2 -->
+    <div class="layer">
+        <div class="layer-title">2. PERSISTENCE LAYER</div>
+
+        <div class="row">
+            <div class="box wide">
+                <strong>SQL Database</strong>
+                <small>SQLite / PostgreSQL<br>Customers &amp; Claim Records</small>
+            </div>
+
+            <div class="box wide">
+                <strong>ChromaDB</strong>
+                <small>Vector Embeddings<br>1,800 Incident Narratives</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="down">↓</div>
+
+    <!-- 3 -->
+    <div class="layer">
+        <div class="layer-title">3. ANALYTICS &amp; MACHINE LEARNING</div>
+
+        <div class="row">
+            <div class="box">
+                <strong>Random Forest</strong>
+                <small>Supervised Risk</small>
+            </div>
+
+            <div class="box">
+                <strong>Isolation Forest</strong>
+                <small>Anomaly Detection</small>
+            </div>
+
+            <div class="box">
+                <strong>Claims Vector Engine</strong>
+                <small>Cosine Similarity</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="down">↓</div>
+
+    <!-- 4 -->
+    <div class="layer">
+        <div class="layer-title">4. LANGGRAPH MULTI-AGENT STATE MACHINE</div>
+
+        <div class="agents">
+            <div class="agent">
+                <strong>Agent 1: Retrieval</strong>
+            </div>
+            <div class="agent">
+                <strong>Agent 2: Risk Analysis</strong>
+            </div>
+            <div class="agent">
+                <strong>Agent 3: Anomaly Detection</strong>
+            </div>
+        </div>
+
+        <div class="merge"></div>
+
+        <div class="center">
+            <div class="box wide">
+                <strong>Agent 4: Summarization</strong>
+                <small>LLM-based Claim Summary</small>
+            </div>
+        </div>
+
+        <div class="decision">
+            <div class="branch">
+                High Risk ≥ 0.70<br>↓
+            </div>
+            <div class="branch">
+                Routine Claim<br>↓
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="box">
+                <strong>Agent 5: SIU Fraud Support</strong>
+            </div>
+
+            <div class="arrow">→</div>
+
+            <div class="box">
+                <strong>Agent 6: Claims Advisor</strong>
+            </div>
+        </div>
+    </div>
+
+    <div class="down">↓</div>
+
+    <!-- 5 -->
+    <div class="layer">
+        <div class="layer-title">5. API &amp; PRESENTATION LAYER</div>
+
+        <div class="center">
+            <div class="box wide">
+                <strong>FastAPI REST Microservice</strong>
+                <small>main.py</small>
+            </div>
+        </div>
+
+        <div class="down">↓</div>
+
+        <div class="dashboard">
+            <strong>React + Vite Frontend Dashboard</strong>
+
+            <div class="items">
+                <div class="item">Claim Dossier</div>
+                <div class="item">Semantic Search</div>
+                <div class="item">Kafka Portal</div>
+                <div class="item">Human Adjudication Gate</div>
+            </div>
+        </div>
+
+        <div class="down">↓</div>
+
+        <div class="human">
+            Human Claims Adjuster Sign-Off
+        </div>
+    </div>
+
+</div>
+</body>
+</html>

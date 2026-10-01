@@ -2,12 +2,15 @@
 
 ## 1. Executive System Overview
 
-**Aegis** is an enterprise-grade AI-powered Insurance Claims Intelligence and Forensic Investigation Assistant. The system combines:
-1. **Predictive Machine Learning**: Random Forest risk classification and unsupervised Isolation Forest anomaly detection.
-2. **Dense Semantic Retrieval**: High-dimensional vector search with ChromaDB and `all-MiniLM-L6-v2`.
-3. **Multi-Agent Orchestration**: A stateful 5-agent LangGraph workflow featuring parallel fan-out execution, live LLM executive synthesis (`gpt-5-nano`), and dynamic Agent-to-Agent (A2A) handoffs to a Special Investigation Unit (SIU) support agent.
-4. **Relational Microservice Architecture**: Modular FastAPI service with database-agnostic SQLAlchemy ORM (SQLite locally, PostgreSQL in production).
-5. **Human-in-the-Loop Governance**: Compliance with the "Four-Eyes Principle" requiring human adjuster adjudication sign-off on all financial disbursements.
+**Aegis** is an enterprise-grade AI-powered Insurance Claims Intelligence, Fraud Detection, and Adjudication Decision Support Platform. Grounded in the real-world **COIL 2000 Insurance Benchmark** (9,822 policyholders across 86 socio-demographic features), Aegis combines:
+
+1. **Predictive Machine Learning**: Supervised Random Forest risk classification and unsupervised Isolation Forest multi-variate anomaly detection.
+2. **Dense Semantic Retrieval**: High-dimensional vector search with ChromaDB and `sentence-transformers/all-MiniLM-L6-v2`.
+3. **Multi-Agent Orchestration (LangGraph)**: A stateful 6-agent LangGraph workflow featuring parallel fan-out execution, live LLM executive synthesis (`gpt-5-nano`), dynamic Agent-to-Agent (A2A) handoffs to a Special Investigation Unit (SIU) support agent, and senior adjudication advisor guidance.
+4. **Universal Agentic Chatbot Copilot**: A multi-turn conversational AI engine equipped with 4 deterministic tools for real-time natural language querying across database records, vector embeddings, and portfolio KPIs.
+5. **Real-time Event-Driven Streaming Ingestion**: Apache Kafka event pipeline with data quality sanitation, schema validation, and background asynchronous ingestion workers.
+6. **Relational Microservice Architecture**: Modular FastAPI service with database-agnostic SQLAlchemy ORM (SQLite for local rapid testing, PostgreSQL with Docker for production).
+7. **Human-in-the-Loop Governance**: Full regulatory compliance with the "Four-Eyes Principle" requiring human adjuster adjudication sign-off on all financial disbursements.
 
 ---
 
@@ -15,80 +18,95 @@
 
 ```mermaid
 flowchart TB
-    subgraph Presentation_Layer["Presentation Layer (Client)"]
-        UI["Aegis Dark-Mode Dashboard<br/>(HTML5 / CSS3 / Vanilla JS)"]
-        CLI["CLI Verification & Test Suite<br/>(pytest / test_api_endpoints.py)"]
+    subgraph Client_Layer["Presentation Layer (Clients & Frontends)"]
+        WebUI["Aegis Dark-Mode Interactive Dashboard<br/>(Claims Explorer, Dossier, Vector Query, Adjuster Gate)"]
+        ReactUI["React / Vite Dashboard & Copilot<br/>(Retro-Pastel Redesign, Advisor Guidance Card)"]
+        ChatUI["Adjuster AI Copilot Chat Drawer<br/>(Natural Language Tool Calling & Suggestions)"]
+        IngestUI["Kafka Ingestion & Sanitation Portal<br/>(Single Claim Form, CSV Bulk Streamer, Audit Logs)"]
     end
 
     subgraph API_Gateway["Microservice API Gateway (FastAPI)"]
-        Main["main.py<br/>(Lifespan, CORS, Static Mount)"]
-        Routes["routes.py<br/>(REST Endpoints: /api/claims, /api/investigate, /api/search)"]
+        Main["main.py<br/>(Lifespan, Static Mount, CORS, Service Registry)"]
+        CoreRoutes["routes.py<br/>(/api/claims, /api/investigate, /api/search, /api/adjuster)"]
+        IngestRoutes["ingestion_routes.py<br/>(/api/ingest/claim, /api/ingest/bulk, /api/ingest/logs)"]
+        ChatRoutes["chat_routes.py<br/>(/api/chat/message, /api/chat/reset, /api/chat/suggestions)"]
         Schemas["schemas.py<br/>(Pydantic v2 DTOs & Validation Contracts)"]
     end
 
-    subgraph Multi_Agent_Core["Agentic Core (LangGraph StateGraph)"]
-        Orchestrator["Workflow Orchestrator<br/>(ClaimsInvestigationState)"]
+    subgraph Kafka_Bus["Event-Driven Streaming Ingestion (Apache Kafka)"]
+        Producer["Kafka Producer Manager<br/>(task1_data_preparation/kafka_service.py)"]
+        TopicRaw["Topic: raw-claims-ingest"]
+        Consumer["Background Ingestion Worker<br/>(task1_data_preparation/streaming_worker.py)"]
+        Sanitizer["Data Sanitizer & Validator<br/>(task1_data_preparation/data_sanitizer.py)"]
+    end
+
+    subgraph Agentic_Core["Agentic Intelligence Core (LangGraph StateGraph)"]
+        State["ClaimsInvestigationState"]
         
         subgraph Fan_Out_Parallel["Parallel Fan-Out Execution"]
-            Agent1["Agent 1: Retrieval Agent<br/>(Semantic Vector Query)"]
-            Agent2["Agent 2: Risk Analysis Agent<br/>(Supervised Classifier & Policy Validation)"]
-            Agent3["Agent 3: Anomaly Agent<br/>(Unsupervised Isolation Forest & IQR Outliers)"]
+            A1["Agent 1: Retrieval Agent<br/>(ChromaDB Dense Vector Precedents)"]
+            A2["Agent 2: Risk Analysis Agent<br/>(Random Forest & Policy Validation)"]
+            A3["Agent 3: Anomaly Agent<br/>(Isolation Forest & IQR Outlier Baselines)"]
         end
 
-        subgraph Fan_In_Consolidation["Fan-In & Synthesis"]
-            Agent4["Agent 4: Summarization Agent<br/>(Live gpt-5-nano Synthesis & Risk Compounding)"]
+        subgraph Fan_In_Synthesis["Fan-In & LLM Synthesis"]
+            A4["Agent 4: Summarization Agent<br/>(Live gpt-5-nano Executive Brief & Compounding)"]
         end
 
-        subgraph Dynamic_Handoff["Dynamic Conditional Edge Routing"]
+        subgraph Conditional_Handoff["Dynamic Conditional Edge Routing"]
             Router{"Conditional Edge:<br/>route_handoff()"}
-            Agent5["Agent 5: SIU Investigation Support Agent<br/>(Forensic Evidence Checklist & Action Formulation)"]
+            A5["Agent 5: SIU Investigation Support Agent<br/>(Forensic Evidence Checklist & Action Formulation)"]
+            A6["Agent 6: Senior Adjudication Advisor Agent<br/>(Adjuster Copilot & Strategic Guidance)"]
             EndNode(["Auto-Cleared / Adjudication Gate<br/>(END)"])
         end
+    end
+
+    subgraph Chatbot_Core["Universal Agentic Chatbot Engine"]
+        ChatEngine["chatbot_engine.py<br/>(Multi-Turn Session Memory, Tool Execution)"]
+        T1["Tool: query_claims_db"]
+        T2["Tool: search_incident_precedents"]
+        T3["Tool: get_claim_dossier"]
+        T4["Tool: get_system_kpis"]
     end
 
     subgraph Analytics_Layer["ML & Analytics Engine"]
         RF_Model["Random Forest Risk Classifier<br/>(ROC-AUC: 0.9467, Accuracy: 87.5%)"]
         IF_Model["Isolation Forest Anomaly Detector<br/>(Contamination: 13.4%, Specificity: 90.2%)"]
-        Baseline["Policy Cohort Statistical Baselines<br/>(IQR, Z-Score Thresholds)"]
+        Baselines["Policy Cohort Statistical Baselines<br/>(IQR, Z-Score Thresholds)"]
         Embedder["Sentence-Transformers<br/>(all-MiniLM-L6-v2)"]
     end
 
     subgraph Storage_Layer["Storage & Persistence Layer"]
-        ChromaStore[("ChromaDB Vector Store<br/>1,800 Incident Narrative Embeddings")]
-        RelationalDB[("SQLAlchemy RDBMS<br/>SQLite (Default) / PostgreSQL (Prod)<br/>Customers, Claims, Investigations, Decisions")]
-        KnowledgeBase[("Processed Data Archive<br/>9,822 COIL Profiles / 1,800 Grounded Claims")]
+        ChromaDB[("ChromaDB Vector Store<br/>1,800+ Incident Narrative Embeddings")]
+        RelationalDB[("SQLAlchemy RDBMS<br/>SQLite (Default) / PostgreSQL (Production)<br/>Customers, Claims, Investigations, Decisions")]
+        GroundTruth[("COIL 2000 Ground Truth Archive<br/>9,822 Profiles / Isolated Evaluation Set")]
     end
 
     %% Interactions
-    UI -->|HTTP / JSON| Routes
-    CLI -->|HTTP / JSON| Routes
-    Main --> Routes
-    Routes --> Schemas
-    Routes --> Orchestrator
-    Routes --> RelationalDB
+    WebUI & ReactUI & ChatUI & IngestUI -->|HTTP / JSON| API_Gateway
+    Main --> CoreRoutes & IngestRoutes & ChatRoutes
+    CoreRoutes --> Schemas & Agentic_Core & RelationalDB
+    ChatRoutes --> ChatEngine
+    ChatEngine --> T1 & T2 & T3 & T4
+    T1 & T3 & T4 --> RelationalDB
+    T2 --> ChromaDB
+    
+    IngestRoutes --> Producer
+    Producer --> TopicRaw
+    TopicRaw --> Consumer
+    Consumer --> Sanitizer
+    Sanitizer --> RelationalDB & ChromaDB
 
-    Orchestrator --> Agent1
-    Orchestrator --> Agent2
-    Orchestrator --> Agent3
-
-    Agent1 --> Embedder
-    Embedder --> ChromaStore
-
-    Agent2 --> RF_Model
-    Agent2 --> RelationalDB
-
-    Agent3 --> IF_Model
-    Agent3 --> Baseline
-
-    Agent1 --> Agent4
-    Agent2 --> Agent4
-    Agent3 --> Agent4
-
-    Agent4 --> Router
-    Router -->|Risk >= 0.70 OR Policy Coverage Mismatch| Agent5
+    State --> A1 & A2 & A3
+    A1 --> Embedder --> ChromaDB
+    A2 --> RF_Model
+    A3 --> IF_Model & Baselines
+    A1 & A2 & A3 --> A4
+    A4 --> Router
+    Router -->|Risk >= 0.70 OR Policy Coverage Mismatch| A5
     Router -->|Routine Claim: Risk < 0.70| EndNode
-    Agent5 --> EndNode
-
+    A5 --> A6
+    A6 --> EndNode
     EndNode --> RelationalDB
 ```
 
@@ -96,7 +114,7 @@ flowchart TB
 
 ## 3. Multi-Agent Workflow Specification (LangGraph)
 
-The core decisioning engine operates on a typed state object (`ClaimsInvestigationState`) passing between 5 specialized agents:
+The core decisioning engine operates on a typed state object (`ClaimsInvestigationState`) passing between 6 specialized agents:
 
 ```mermaid
 sequenceDiagram
@@ -109,6 +127,7 @@ sequenceDiagram
     participant A3 as Agent 3: Anomaly Detection
     participant A4 as Agent 4: Summarization (LLM)
     participant A5 as Agent 5: SIU Support
+    participant A6 as Agent 6: Senior Advisor
     participant DB as Relational Database
 
     Adjuster->>API: POST /api/investigate/{claim_id}
@@ -137,13 +156,18 @@ sequenceDiagram
         Graph->>A5: Dynamic A2A Handoff (SIU Escalation)
         A5->>A5: Compile Forensic Evidence Checklist
         A5-->>Graph: Action: ESCALATE TO SIU
+        Graph->>A6: Invoke Senior Adjudication Advisor
+        A6->>A6: Generate Strategic Guidance & Investigation Inquiries
+        A6-->>Graph: Strategic Advisor Directives
     else Routine Claim (Risk < 0.70)
+        Graph->>A6: Invoke Senior Adjudication Advisor
+        A6-->>Graph: Routine Fast-Track Validation Guidance
         Graph-->>Graph: Auto-Cleared (Routine Finish)
     end
 
     Graph-->>API: Return Final ClaimsInvestigationState
-    API->>DB: Store InvestigationRecord (Score, Checklist, Audit Trace)
-    API-->>Adjuster: Render Live Dossier, Risk Gauges & LLM Brief
+    API->>DB: Store InvestigationRecord (Score, Checklist, Advisor Guidance, Audit Trace)
+    API-->>Adjuster: Render Live Dossier, Risk Gauges, SIU Checklist & Advisor Guidance
     
     Adjuster->>API: POST /api/adjuster/decision (Sign-Off)
     API->>DB: Commit AdjusterDecision & Update Claim Status
@@ -159,10 +183,63 @@ sequenceDiagram
 | **Agent 3: Anomaly Detection** | `anomaly_agent.py` | Discovers multi-dimensional statistical outliers and distribution deviations | Unsupervised Isolation Forest + Historical Statistical Baseline |
 | **Agent 4: Summarization** | `summarization_agent.py` | Consolidates specialist inputs and constructs adjuster executive briefs | OpenAI reasoning model (`gpt-5-nano`) |
 | **Agent 5: SIU Support** | `investigation_agent.py` | Constructs evidentiary checklists and recommended escalation pathways | Forensic Rule Engine & Checklist Generator |
+| **Agent 6: Senior Advisor** | `advisor_agent.py` | Provides strategic claims adjudication directives, inquiry questions, and reviewer fast-track advice | LLM Reasoning & Prompt Optimization Engine |
 
 ---
 
-## 4. Relational Database Schema & Entity Relationships
+## 4. Universal Agentic Chatbot Engine
+
+The system includes an intelligent natural language chatbot copilot (`chatbot_engine.py` / `chat_routes.py`) that answers complex adjuster questions across 4 deterministic tools:
+
+```mermaid
+flowchart LR
+    UserPrompt["Adjuster Natural Language Prompt"] --> LLM["LLM Agent (gpt-5-nano)"]
+    LLM --> Decision{"Tool Calling Decision"}
+    
+    Decision -->|Filter & Aggregates| T1["tool_query_claims_db<br/>(Amounts, Delay, Severity, Police Report)"]
+    Decision -->|Semantic Precedents| T2["tool_search_incident_precedents<br/>(ChromaDB Vector Similarity)"]
+    Decision -->|Deep Dive Dossier| T3["tool_get_claim_dossier<br/>(360° Profile & ML Factors)"]
+    Decision -->|Portfolio Metrics| T4["tool_get_system_kpis<br/>(Approval Rate, SIU %, Benchmarks)"]
+    
+    T1 & T2 & T3 & T4 --> Synthesizer["Contextual Synthesis & Citation Formatter"]
+    Synthesizer --> Reply["Structured Response with Cited Claims & Tools Log"]
+```
+
+---
+
+## 5. Event-Driven Streaming Ingestion Pipeline (Kafka)
+
+Claims can enter the system via high-throughput real-time Kafka event streams or batch CSV uploads:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor ExternalSystem as External Ingestion Source / CSV Upload
+    participant API as Ingestion API (/api/ingest/claim)
+    participant Producer as KafkaProducerManager
+    participant Topic as Kafka Topic (raw-claims-ingest)
+    participant Worker as Background Ingestion Worker
+    participant Sanitizer as Data Sanitizer & Validator
+    participant DB as SQLite / PostgreSQL
+    participant VectorStore as ChromaDB
+
+    ExternalSystem->>API: POST /api/ingest/claim (JSON / CSV row)
+    API->>Producer: publish_claim_event(payload)
+    Producer->>Topic: Emit Raw Ingestion Event
+    API-->>ExternalSystem: Return 200 Queued Status
+    
+    Topic->>Worker: Poll Message Batch
+    Worker->>Sanitizer: sanitize_claim_record(payload)
+    Sanitizer->>Sanitizer: Fix types, impute defaults, validate policy rules
+    Sanitizer-->>Worker: Cleaned & Standardized Claim Entity
+    Worker->>DB: Upsert Customer & Claim Record
+    Worker->>VectorStore: Embed Description into ChromaDB
+    Worker->>Worker: Append Event to INGESTION_LOG_BUFFER
+```
+
+---
+
+## 6. Relational Database Schema & Entity Relationships
 
 The relational data model is built database-agnostically with SQLAlchemy. It supports zero-configuration SQLite for development and PostgreSQL for production:
 
@@ -217,6 +294,7 @@ erDiagram
         string recommendation
         text executive_summary
         text evidence_checklist
+        text advisor_guidance
         text audit_log
         datetime investigated_at
     }
@@ -233,7 +311,7 @@ erDiagram
 
 ---
 
-## 5. Data Flow & Zero-Leakage Architecture
+## 7. Data Flow & Zero-Leakage Architecture
 
 A core design requirement was guaranteeing zero data leakage:
 1. **Observable Features Only**:
@@ -245,8 +323,8 @@ A core design requirement was guaranteeing zero data leakage:
 
 ---
 
-## 6. Security, Compliance & Four-Eyes Governance
+## 8. Security, Compliance & Four-Eyes Governance
 
-- **Human-in-the-Loop (HITL) Gate**: In compliance with insurance regulatory mandates, the multi-agent system does not autonomously disburse payments. It provides evidence and structured recommendations (`Auto-Cleared`, `Documentation Review`, `SIU Escalation`), requiring an authorized human adjuster to perform final adjudication sign-off.
+- **Human-in-the-Loop (HITL) Gate**: In compliance with insurance regulatory mandates, the multi-agent system does not autonomously disburse payments. It provides evidence, structured recommendations (`Auto-Cleared`, `Documentation Review`, `SIU Escalation`), and strategic advisor questions, requiring an authorized human adjuster to perform final adjudication sign-off.
 - **Audit Logging**: Every agent step records its timestamp, role, state transition, and findings into the persistent `audit_log` JSON field, enabling full regulatory explainability.
 - **Environment Isolation**: API credentials and database connection strings are strictly managed via `.env` with fallback defaults. Binary models and database files are omitted from git tracking.

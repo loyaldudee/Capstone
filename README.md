@@ -4,14 +4,26 @@
 [![LangGraph](https://img.shields.io/badge/LangGraph-Multi--Agent-orange)](https://github.com/langchain-ai/langgraph)
 [![ChromaDB](https://img.shields.io/badge/ChromaDB-Vector--Store-blue)](https://www.trychroma.com)
 [![Scikit-Learn](https://img.shields.io/badge/scikit--learn-ML--Ensembles-F7931E?logo=scikitlearn&logoColor=white)](https://scikit-learn.org)
+[![Apache Kafka](https://img.shields.io/badge/Apache_Kafka-Event_Streaming-231F20?logo=apachekafka&logoColor=white)](https://kafka.apache.org/)
+[![React](https://img.shields.io/badge/React-18.0-61DAFB?logo=react&logoColor=black)](https://reactjs.org/)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
-**Aegis** is an enterprise-grade AI-powered claims adjudication and forensic intelligence platform. Grounded in the real-world **COIL 2000 Insurance Benchmark**, Aegis blends deterministic machine learning, high-dimensional vector search, and a stateful **5-agent LangGraph workflow** with human-in-the-loop decision governance.
+**Aegis** is an enterprise-grade AI-powered claims adjudication and forensic intelligence platform. Grounded in the real-world **COIL 2000 Insurance Benchmark**, Aegis blends deterministic machine learning, high-dimensional vector search, real-time Apache Kafka streaming ingestion, a stateful **6-agent LangGraph workflow**, an **Adjuster AI Copilot Chatbot**, and human-in-the-loop decision governance.
 
 ---
 
-## Key Highlights & Verification Benchmarks
+## 📚 Task 5 Documentation Suite
+
+All detailed architectural specifications, user manuals, and presentation guides are available in [`task5_documentation/`](file:///c:/Users/Administrator/Desktop/Capstone/Capstone/task5_documentation):
+- 📘 [**USER_GUIDE_AND_EXECUTION.md**](file:///c:/Users/Administrator/Desktop/Capstone/Capstone/task5_documentation/USER_GUIDE_AND_EXECUTION.md) — Complete setup guide, feature inventory, step-by-step run instructions, REST API reference, and troubleshooting.
+- 📐 [**ARCHITECTURE.md**](file:///c:/Users/Administrator/Desktop/Capstone/Capstone/task5_documentation/ARCHITECTURE.md) — Full technical architecture, multi-agent sequence diagrams, database schemas, Kafka streaming, and trade-off rationales.
+- 🎤 [**PRESENTATION_GUIDE.md**](file:///c:/Users/Administrator/Desktop/Capstone/Capstone/task5_documentation/PRESENTATION_GUIDE.md) — 10-minute executive pitch script (8-min demo + 2-min Q&A defense).
+- 📊 [**EVALUATION_REPORT.md**](file:///c:/Users/Administrator/Desktop/Capstone/Capstone/task4_evaluation_and_ui/EVALUATION_REPORT.md) — Objective evaluation benchmark across all 5 PRD evaluation dimensions.
+
+---
+
+## 🚀 Key Highlights & Verification Benchmarks
 
 | Evaluation Dimension | Metric | Aegis Result | PRD Benchmark |
 | :--- | :--- | :--- | :--- |
@@ -27,18 +39,28 @@
 
 ---
 
-## System Architecture
+## 🏛️ System Architecture
 
 ```mermaid
 flowchart TB
     subgraph UI_Layer["Presentation Layer"]
         WebUI["Aegis Dark-Mode Dashboard<br/>(Claims Explorer, Dossier, Vector Query, Adjuster Gate)"]
+        ChatUI["Adjuster AI Copilot Chat Drawer<br/>(Natural Language Tool Calling)"]
+        IngestUI["Kafka Ingestion Portal<br/>(Manual & Bulk CSV Streamer)"]
     end
 
     subgraph API_Layer["Modular FastAPI Microservice"]
         Main["main.py (App, Lifespan, CORS, Static Mount)"]
-        Routes["routes.py (REST Endpoints)"]
+        CoreRoutes["routes.py (Core Claims & Investigation Endpoints)"]
+        IngestRoutes["ingestion_routes.py (Kafka Streaming Ingestion)"]
+        ChatRoutes["chat_routes.py (Adjuster AI Copilot Endpoints)"]
         Schemas["schemas.py (Pydantic v2 DTOs)"]
+    end
+
+    subgraph Kafka_Bus["Streaming Event Bus (Apache Kafka)"]
+        Producer["Kafka Producer Manager"]
+        Topic["Topic: raw-claims-ingest"]
+        Worker["Ingestion Worker & Sanitizer"]
     end
 
     subgraph LangGraph_Core["Agentic Multi-Agent Core (LangGraph)"]
@@ -57,186 +79,159 @@ flowchart TB
         subgraph Handoff["Dynamic Conditional Edge Routing"]
             Router{"Risk >= 0.70 OR<br/>Coverage Failure?"}
             A5["Agent 5: SIU Investigation Support<br/>(Forensic Evidence Checklist)"]
+            A6["Agent 6: Senior Adjudication Advisor<br/>(Strategic Directives & Inquiries)"]
             AdjudicationGate(["Human-in-the-Loop Reviewer Gate<br/>(Four-Eyes Compliance)"])
         end
     end
 
     subgraph Storage_Layer["Persistence Layer"]
-        Chroma[("ChromaDB Vector Store<br/>1,800 Incident Narrative Embeddings")]
+        Chroma[("ChromaDB Vector Store<br/>1,800+ Incident Narrative Embeddings")]
         RDBMS[("SQLAlchemy RDBMS<br/>SQLite (Default) / PostgreSQL (Production)")]
     end
 
-    WebUI <--> Routes
-    Main --> Routes
-    Routes --> Schemas
-    Routes <--> RDBMS
-    Routes --> Orchestrator
-
+    WebUI & ChatUI & IngestUI <--> API_Layer
+    API_Layer --> Kafka_Bus
+    Kafka_Bus --> RDBMS & Chroma
+    API_Layer --> LangGraph_Core
     Orchestrator --> A1 & A2 & A3
     A1 <--> Chroma
     A2 <--> RDBMS
     A1 & A2 & A3 --> A4
     A4 --> Router
     Router -->|High Risk| A5
-    Router -->|Routine Claim| AdjudicationGate
-    A5 --> AdjudicationGate
+    Router -->|Routine Claim| A6
+    A5 --> A6
+    A6 --> AdjudicationGate
 ```
 
 ---
 
-## Repository Structure
+## 📂 Repository Structure
 
 ```
-d:\Capstone\
-├── main.py                     # Central FastAPI application & lifespan manager
-├── routes.py                   # Modular APIRouter with all REST endpoints
-├── schemas.py                  # Pydantic v2 data transfer objects (DTOs)
-├── models.py                   # SQLAlchemy ORM relational models
-├── database.py                 # Engine, sessionmaker, get_db() & auto-seeding
-├── server.py                   # Runner alias (py .\server.py or uvicorn main:app)
-├── docker-compose.yml          # Production PostgreSQL & pgAdmin services
-├── .env                        # Environment variables (API Key, Base URL, Database)
+Capstone/
+├── main.py                         # Central FastAPI application & lifespan manager
+├── routes.py                       # Core claims, investigation & search REST endpoints
+├── ingestion_routes.py             # Kafka streaming & CSV bulk upload REST endpoints
+├── chat_routes.py                  # Adjuster AI Copilot Chatbot REST endpoints
+├── chatbot_engine.py               # Universal 4-tool conversational LLM engine
+├── database.py                     # SQLAlchemy engine, sessionmaker & auto-seeding
+├── models.py                       # SQLAlchemy ORM relational models
+├── schemas.py                      # Pydantic v2 data transfer objects (DTOs)
+├── server.py                       # CLI execution runner alias
+├── docker-compose.yml              # Production PostgreSQL & pgAdmin services
+├── requirements.txt                # Python dependencies
+├── .env                            # Environment variables (API Key, Base URL, Database)
 │
-├── task1_data_preparation/     # Task 1: 9,822 COIL profiles, 1,800 grounded claims
-│   ├── prepare_data.py         # Data decoding & synthetic generation engine
-│   └── processed_data/         # customers_clean.csv, claims_knowledge_base.csv
+├── task1_data_preparation/         # Task 1: 9,822 COIL profiles, 1,800 grounded claims
+│   ├── prepare_data.py             # Data decoding & synthetic generation engine
+│   ├── data_sanitizer.py           # Real-time data validation and schema repair
+│   ├── kafka_service.py            # Kafka producer manager & buffer
+│   ├── streaming_worker.py         # Asynchronous Kafka ingestion worker
+│   └── processed_data/             # Processed datasets (clean & ground truth)
 │
-├── task2_models_analytics/     # Task 2: Predictive analytics & vector storage
-│   ├── train_models.py         # Random Forest & Isolation Forest training
-│   ├── models/                 # claims_risk_engine.py, claims_vector_engine.py
-│   └── vector_store/           # ChromaDB dense persistent vector index
+├── task2_models_analytics/         # Task 2: Predictive analytics & vector storage
+│   ├── train_models.py             # Random Forest & Isolation Forest training
+│   ├── build_vector_store.py       # ChromaDB dense vector indexing script
+│   ├── test_models.py              # ML model unit test suite
+│   ├── models/                     # claims_risk_engine.py, claims_vector_engine.py
+│   └── vector_store/               # ChromaDB dense persistent vector index
 │
-├── task3_multi_agent_system/   # Task 3: LangGraph 5-Agent Architecture
-│   ├── graph.py                # StateGraph with parallel fan-out & dynamic handoffs
-│   ├── state.py                # TypedDict shared state definition
-│   ├── llm_client.py           # Resilient gpt-5-nano client wrapper
-│   └── agents/                 # 5 specialized agent implementations
+├── task3_multi_agent_system/       # Task 3: LangGraph 6-Agent Architecture
+│   ├── graph.py                    # StateGraph with parallel fan-out & dynamic handoffs
+│   ├── state.py                    # TypedDict shared state definition
+│   ├── llm_client.py               # Resilient gpt-5-nano client wrapper
+│   ├── test_multi_agent.py         # Multi-agent CLI simulation runner
+│   └── agents/                     # 6 specialized agent implementations:
+│       ├── retrieval_agent.py      # Agent 1: ChromaDB Dense Vector Search
+│       ├── risk_analysis_agent.py  # Agent 2: Supervised Random Forest Classifier
+│       ├── anomaly_agent.py        # Agent 3: Unsupervised Isolation Forest Detector
+│       ├── summarization_agent.py  # Agent 4: Live gpt-5-nano Executive Brief
+│       ├── investigation_agent.py  # Agent 5: SIU Forensic Evidence Checklist
+│       └── advisor_agent.py        # Agent 6: Senior Adjudication Advisor Copilot
 │
-├── task4_evaluation_and_ui/    # Task 4: Automated evaluation & interactive UI
-│   ├── evaluate_system.py      # Automated 5-criteria benchmark suite
-│   ├── test_api_endpoints.py   # Comprehensive endpoint integration test
-│   ├── evaluation_report.json  # Raw evaluation benchmark outputs
-│   ├── EVALUATION_REPORT.md    # Detailed evaluation markdown report
-│   └── static/                 # index.html, styles.css, app.js
+├── task4_evaluation_and_ui/        # Task 4: Automated evaluation & interactive UI
+│   ├── evaluate_system.py          # Automated 5-criteria benchmark suite
+│   ├── test_api_endpoints.py       # Comprehensive endpoint integration test
+│   ├── evaluation_report.json      # Raw evaluation benchmark outputs
+│   ├── EVALUATION_REPORT.md        # Detailed evaluation markdown report
+│   └── static/                     # Built frontend assets (HTML/CSS/JS)
 │
-└── task5_documentation/        # Task 5: System documentation & architecture
-    ├── ARCHITECTURE.md         # Full technical architecture specification
-    ├── PRESENTATION_GUIDE.md   # 10-minute executive presentation & demo script
-    └── Project_10_*.pdf        # Original project requirement specification
+├── task5_documentation/            # Task 5: System documentation & architecture
+│   ├── USER_GUIDE_AND_EXECUTION.md # Complete manual, feature catalog & API reference
+│   ├── ARCHITECTURE.md             # Full technical architecture specification
+│   ├── PRESENTATION_GUIDE.md       # 10-minute executive presentation & demo script
+│   └── Project_10_*.pdf            # Original project requirement specification
+│
+└── frontend/                       # React / Vite / Tailwind UI source components
 ```
 
 ---
 
-## Installation & Quickstart
+## ⚡ Quickstart: How to Run the Project
 
 ### 1. Prerequisites
-- Python 3.10 or higher
-- Git
+- Python 3.10+
+- (Optional) Node.js 18+ for compiling React frontend
+- (Optional) Docker for PostgreSQL & Apache Kafka
 
-### 2. Environment Setup
-Clone the repository and activate the virtual environment:
+### 2. Install Dependencies
 ```powershell
-# Clone repo
-git clone https://github.com/loyaldudee/Capstone.git
-cd Capstone
-
 # Create and activate virtual environment
 python -m venv venv
 .\venv\Scripts\activate
 
-# Install required packages
-pip install fastapi uvicorn sqlalchemy chromadb sentence-transformers scikit-learn pandas numpy pydantic openai langgraph python-dotenv httpx
+# Install Python requirements
+pip install -r requirements.txt
 ```
 
 ### 3. Configure `.env`
-Ensure your `.env` file in the root folder contains your LLM credentials:
+Ensure `.env` in the root folder contains:
 ```ini
-OPENAI_API_KEY=your_live_api_key_here
+OPENAI_API_KEY=your_api_key_here
 OPENAI_BASE_URL=https://api.aicredits.in/v1
 MODEL_NAME=gpt-5-nano
-
-# Optional: Set for PostgreSQL (defaults to local SQLite if omitted)
-# DATABASE_URL=postgresql://aegis_user:aegis_secure_password@localhost:5432/aegis_insurance_db
+DATABASE_URL=sqlite:///./insurance.db
+KAFKA_BOOTSTRAP_SERVERS=localhost:9092
 ```
 
-### 4. Run the Web Dashboard & Microservice
+### 4. Start the Application Server
 ```powershell
-uvicorn main:app --reload
+python server.py
 # or
-py .\server.py
+uvicorn main:app --host 127.0.0.1 --port 8000 --reload
 ```
-Open your browser to: **http://127.0.0.1:8000**
+
+Open your browser to:
+- 🌐 **Claims Explorer & Live Dossier**: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- 🔍 **ChromaDB Semantic Vector Search**: [http://127.0.0.1:8000/search](http://127.0.0.1:8000/search)
+- 📥 **Kafka Ingestion & Sanitation Portal**: [http://127.0.0.1:8000/ingest](http://127.0.0.1:8000/ingest)
+- 💬 **Adjuster AI Copilot Chatbot**: [http://127.0.0.1:8000/chat](http://127.0.0.1:8000/chat)
+- 📖 **Interactive Swagger / OpenAPI Docs**: [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
 
 ---
 
-## Running Verification & Test Suites
+## 🧪 Running Verification & Test Suites
 
-### Run Automated 5-Criteria Benchmark Evaluation
 ```powershell
+# 1. Run Automated 5-Criteria Benchmark Evaluation Suite
 python task4_evaluation_and_ui/evaluate_system.py
-```
-*Generates updated `evaluation_report.json` and `EVALUATION_REPORT.md` verifying all PRD benchmarks.*
 
-### Run Microservice REST API Integration Tests
-```powershell
+# 2. Run REST API Endpoint Integration Tests
 python task4_evaluation_and_ui/test_api_endpoints.py
-```
-*Tests all 7 REST endpoints, database queries, vector retrieval, and human decision gate.*
 
-### Run Standalone LangGraph Multi-Agent CLI Simulation
-```powershell
+# 3. Run Standalone LangGraph Multi-Agent CLI Simulation
 python task3_multi_agent_system/test_multi_agent.py
+
+# 4. Run Scikit-Learn Model Unit Tests
+python task2_models_analytics/test_models.py
 ```
-*Simulates concurrent parallel agent execution and dynamic handoffs directly in the console.*
 
 ---
 
-## REST API Documentation
+## 🛡️ Human-in-the-Loop Governance ("Four-Eyes Principle")
 
-| Method | Endpoint | Description |
-| :--- | :--- | :--- |
-| `GET` | `/` | Serves the interactive Aegis UI Dashboard |
-| `GET` | `/api/stats` | Returns real-time KPI counts (Total Claims, SIU Flagged, Approved, Pending) |
-| `GET` | `/api/claims` | Paginated claim explorer (`?page=1&limit=25&query=...&policy_type=...&status=...`) |
-| `GET` | `/api/claims/{claim_id}` | Complete claim dossier + customer demographic profile + investigation history |
-| `POST` | `/api/investigate/{claim_id}` | Executes the 5-agent LangGraph workflow and stores findings in the database |
-| `POST` | `/api/search/similar` | Dense semantic vector query over 1,800 incident narratives via ChromaDB |
-| `POST` | `/api/adjuster/decision` | Human reviewer adjudication sign-off (`Approved`, `Documentation Review`, `SIU Escalation`) |
-| `GET` | `/api/evaluation/metrics` | Returns system verification benchmarks and confusion matrix data |
-
----
-
-## Production Deployment: PostgreSQL Setup
-
-Aegis is database-agnostic. While SQLite is used for zero-dependency local development, PostgreSQL is supported out-of-the-box:
-
-1. **Start PostgreSQL via Docker Compose**:
-   ```powershell
-   docker compose up -d
-   ```
-   *Starts PostgreSQL 15 on port `5432` and pgAdmin 4 on port `5050`.*
-
-2. **Update `.env`**:
-   ```ini
-   DATABASE_URL=postgresql://aegis_user:aegis_secure_password@localhost:5432/aegis_insurance_db
-   ```
-
-3. **Start the Microservice**:
-   ```powershell
-   uvicorn main:app --reload
-   ```
-   *FastAPI's startup lifespan will automatically detect the empty PostgreSQL database, build all relational schemas, and auto-seed the 9,822 customers and 1,800 claims.*
-
----
-
-## Human-in-the-Loop Governance ("Four-Eyes Principle")
-
-Under insurance regulatory guidelines, AI systems cannot autonomously approve indemnity disbursements. Aegis operates strictly as an **intelligence and decision-support co-pilot**:
-- **Routine Claims (Risk < 70%)**: The system automatically verifies coverage, benchmarks against historical payouts, marks the claim `Auto-Cleared`, and provides a structured recommendation for the adjuster to sign off in seconds.
-- **High-Risk Claims (Risk >= 70% or Coverage Mismatch)**: The system triggers an autonomous handoff to the SIU Support Agent, compiles an evidentiary checklist, and flags the case for formal forensic investigation.
-
----
-
-## License & Acknowledgments
-- Grounded in the **COIL 2000 The Insurance Company Benchmark** (Dutch Association of Insurers / Sentient Machine Research).
-- Developed for the **AI-Powered Insurance Claims Intelligence Assistant Capstone**.
+In compliance with insurance regulatory guidelines, AI systems cannot autonomously approve indemnity disbursements:
+- **Routine Claims (Risk < 70%)**: The system automatically verifies coverage, benchmarks against historical payouts, marks the claim `Auto-Cleared`, and provides structured fast-track recommendations.
+- **High-Risk Claims (Risk >= 70% or Coverage Mismatch)**: The system triggers an autonomous handoff to the SIU Support Agent and Senior Advisor, compiling an evidentiary checklist and recommended inquiry questions.
+- **Final Adjudication**: Authorized human adjusters make the final sign-off with audit logging.
